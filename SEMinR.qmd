@@ -1,7 +1,7 @@
 ---
 title: "Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)"
 subtitle: "Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R"
-author: "Eliana Cardoso Gonçalves"
+author: "Eliana Cardoso Gonçalves e Evandro Augusto Rubert Roza"
 date: "`r Sys.Date()`" 
 date-format: short # formatação dd/mm/aaaa
 lang: pt # linguagem
