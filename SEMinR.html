@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Eliana Cardoso Gonçalves">
+
+<title>Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="SEMinR_files/libs/clipboard/clipboard.min.js"></script>
+<script src="SEMinR_files/libs/quarto-html/quarto.js"></script>
+<script src="SEMinR_files/libs/quarto-html/popper.min.js"></script>
+<script src="SEMinR_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="SEMinR_files/libs/quarto-html/anchor.min.js"></script>
+<link href="SEMinR_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="SEMinR_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="SEMinR_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="SEMinR_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="SEMinR_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="SEMinR_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="SEMinR_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#seminr" id="toc-seminr" class="nav-link active" data-scroll-target="#seminr"><span class="header-section-number">1</span> SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#carregando-e-limpando-os-dados" id="toc-carregando-e-limpando-os-dados" class="nav-link" data-scroll-target="#carregando-e-limpando-os-dados"><span class="header-section-number">1.1</span> Carregando e Limpando os Dados</a></li>
+  <li><a href="#especificando-os-modelos-de-mensuração" id="toc-especificando-os-modelos-de-mensuração" class="nav-link" data-scroll-target="#especificando-os-modelos-de-mensuração"><span class="header-section-number">1.2</span> Especificando os Modelos de Mensuração</a></li>
+  <li><a href="#especificação-do-modelo-estrutural-em-seminr" id="toc-especificação-do-modelo-estrutural-em-seminr" class="nav-link" data-scroll-target="#especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">1.3</span> Especificação do Modelo Estrutural em SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-relacionamentos" id="toc-tipos-de-relacionamentos" class="nav-link" data-scroll-target="#tipos-de-relacionamentos"><span class="header-section-number">1.3.1</span> Tipos de Relacionamentos</a></li>
+  </ul></li>
+  <li><a href="#estimativa-do-modelo-em-seminr" id="toc-estimativa-do-modelo-em-seminr" class="nav-link" data-scroll-target="#estimativa-do-modelo-em-seminr"><span class="header-section-number">1.4</span> Estimativa do Modelo em SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#modelos-de-mensuração" id="toc-modelos-de-mensuração" class="nav-link" data-scroll-target="#modelos-de-mensuração"><span class="header-section-number">1.4.1</span> Modelos de Mensuração</a></li>
+  <li><a href="#procedimentos-iterativos-do-algoritmo-pls-sem" id="toc-procedimentos-iterativos-do-algoritmo-pls-sem" class="nav-link" data-scroll-target="#procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">1.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</a></li>
+  <li><a href="#configurações-do-algoritmo-para-estimativa-do-modelo-pls" id="toc-configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="nav-link" data-scroll-target="#configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">1.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</a></li>
+  </ul></li>
+  <li><a href="#bootstrapping-do-modelo" id="toc-bootstrapping-do-modelo" class="nav-link" data-scroll-target="#bootstrapping-do-modelo"><span class="header-section-number">1.5</span> Bootstrapping do Modelo</a></li>
+  <li><a href="#exportação-de-resultados-e-gráficos-do-seminr" id="toc-exportação-de-resultados-e-gráficos-do-seminr" class="nav-link" data-scroll-target="#exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">1.6</span> Exportação de Resultados e Gráficos do SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" id="toc-exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="nav-link" data-scroll-target="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">1.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</a></li>
+  <li><a href="#gerando-gráficos-de-alta-qualidade" id="toc-gerando-gráficos-de-alta-qualidade" class="nav-link" data-scroll-target="#gerando-gráficos-de-alta-qualidade"><span class="header-section-number">1.6.2</span> Gerando Gráficos de Alta Qualidade</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#referência" id="toc-referência" class="nav-link" data-scroll-target="#referência"><span class="header-section-number">2</span> Referência</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Outros formatos</h2><ul><li><a href="SEMinR.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="SEMinR.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)</h1>
+<p class="subtitle lead">Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>Eliana Cardoso Gonçalves </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Data de Publicação</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">22/10/2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<style type="text/css">
+body {
+  text-align: justify;
+}
+
+</style>
+</div>
+<section id="seminr" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> SEMinR</h1>
+<p>O SEMinR é um pacote de software desenvolvido para o ambiente estatístico R, que traz uma sintaxe amigável para criar e estimar modelos de equações estruturais (SEM). Ele é open source, o que significa que qualquer pessoa pode inspecionar, modificar e aprimorar o código-fonte. O SEMinR é distribuído sob a Licença Pública Geral GNU versão 3 (GPL-3), permitindo seu uso gratuito para fins pessoais, acadêmicos e comerciais, desde que qualquer alteração ou aplicação derivada também seja de código aberto.</p>
+<p>O SEMinR está hospedado no GitHub, onde os usuários são incentivados a seguir a página e contribuir para o projeto, além de reportar problemas por meio do recurso de issues. Há também um grupo no Facebook onde os desenvolvedores e usuários discutem novidades, práticas recomendadas e tutoriais sobre o SEMinR.</p>
+<p>A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote <strong>lavaan</strong> para a estimativa CB-SEM.</p>
+<p>O desenvolvimento do SEMinR está em constante melhoria, incorporando novos métodos e oferecendo opções úteis de relatórios. Para usar o SEMinR, é necessário instalá-lo no RStudio, sendo recomendada a atualização para a versão mais recente do R e RStudio, se necessário.</p>
+<p>O processo para especificar e estimar um modelo de equações estruturais no SEMinR envolve quatro etapas principais:</p>
+<ol type="1">
+<li><strong>Carregar e limpar os dados:</strong> Importar os dados e realizar qualquer limpeza necessária para garantir que estejam prontos para análise.</li>
+<li><strong>Especificar os modelos de mensuração:</strong> Definir os construtos e como eles serão medidos, como no exemplo do modelo de reputação corporativa.</li>
+<li><strong>Especificar o modelo estrutural:</strong> Estabelecer as relações entre os construtos, identificando quais são os exógenos e endógenos.</li>
+<li><strong>Estimar, realizar o bootstrap e resumir o modelo:</strong> Estimar o modelo, aplicar o bootstrap para validar os resultados e gerar um resumo da análise.</li>
+</ol>
+<section id="carregando-e-limpando-os-dados" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="carregando-e-limpando-os-dados"><span class="header-section-number">1.1</span> Carregando e Limpando os Dados</h2>
+<p>Os arquivos CSV (Comma-Separated Values) são arquivos de texto onde cada linha representa os dados de um sujeito, com valores correspondentes a variáveis separadas por vírgulas ou outros caracteres, como ponto e vírgula. A primeira linha geralmente contém os nomes das variáveis (linha de cabeçalho). Para carregar um arquivo CSV no R, utiliza-se a função <code>read.csv()</code>, e a documentação pode ser acessada com <code>?read.csv</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instalar e Carregar o Pacote</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("seminr")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seminr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Importar banco de dados</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>corp_rep_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> <span class="st">"Corporate Reputation Data.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(corp_rep_data )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">serviceprovider</th>
+<th style="text-align: right;">servicetype</th>
+<th style="text-align: right;">comp_1</th>
+<th style="text-align: right;">comp_2</th>
+<th style="text-align: right;">comp_3</th>
+<th style="text-align: right;">like_1</th>
+<th style="text-align: right;">like_2</th>
+<th style="text-align: right;">like_3</th>
+<th style="text-align: right;">cusl_1</th>
+<th style="text-align: right;">cusl_2</th>
+<th style="text-align: right;">cusl_3</th>
+<th style="text-align: right;">cusa</th>
+<th style="text-align: right;">csor_1</th>
+<th style="text-align: right;">csor_2</th>
+<th style="text-align: right;">csor_3</th>
+<th style="text-align: right;">csor_4</th>
+<th style="text-align: right;">csor_5</th>
+<th style="text-align: right;">csor_global</th>
+<th style="text-align: right;">attr_1</th>
+<th style="text-align: right;">attr_2</th>
+<th style="text-align: right;">attr_3</th>
+<th style="text-align: right;">attr_global</th>
+<th style="text-align: right;">perf_1</th>
+<th style="text-align: right;">perf_2</th>
+<th style="text-align: right;">perf_3</th>
+<th style="text-align: right;">perf_4</th>
+<th style="text-align: right;">perf_5</th>
+<th style="text-align: right;">perf_global</th>
+<th style="text-align: right;">qual_1</th>
+<th style="text-align: right;">qual_2</th>
+<th style="text-align: right;">qual_3</th>
+<th style="text-align: right;">qual_4</th>
+<th style="text-align: right;">qual_5</th>
+<th style="text-align: right;">qual_6</th>
+<th style="text-align: right;">qual_7</th>
+<th style="text-align: right;">qual_8</th>
+<th style="text-align: right;">qual_global</th>
+<th style="text-align: right;">switch_1</th>
+<th style="text-align: right;">switch_2</th>
+<th style="text-align: right;">switch_3</th>
+<th style="text-align: right;">switch_4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="especificando-os-modelos-de-mensuração" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="especificando-os-modelos-de-mensuração"><span class="header-section-number">1.2</span> Especificando os Modelos de Mensuração</h2>
+<p>Os modelos de caminho consistem em dois elementos:</p>
+<ol type="1">
+<li><strong>Modelos de mensuração (ou modelos externos)</strong>: descrevem as relações entre as variáveis latentes e seus indicadores.</li>
+<li><strong>Modelo estrutural (ou modelo interno)</strong>: descreve as relações entre as variáveis latentes.</li>
+</ol>
+<p>Para especificar os modelos de mensuração, baseamo-nos na teoria de mensuração, que é essencial para obter resultados úteis em análises PLS-SEM. A validade das relações estruturais entre os construtos depende da qualidade das medidas dos construtos.</p>
+<p>O SEMinR utiliza a função <code>constructs()</code> para especificar a lista de todos os modelos de mensuração dos construtos. Dentro dessa lista, podemos definir diferentes construtos por meio das seguintes funções:</p>
+<ul>
+<li><code>composite()</code>: especifica a mensuração de construtos individuais.</li>
+<li><code>interaction_term()</code>: especifica termos de interação.</li>
+<li><code>higher_composite()</code>: especifica modelos de componentes hierárquicos (construtos de ordem superior).</li>
+</ul>
+<p>Esses elementos são fundamentais para garantir que os modelos de mensuração sejam robustos e confiáveis.</p>
+<div class="cell">
+<div id="tbl-argumentosdafuncao-compisite" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-argumentosdafuncao-compisite-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;1: Argumentos da Função composite()
+</figcaption>
+<div aria-describedby="tbl-argumentosdafuncao-compisite-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Argumento</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">construct_name</td>
+<td style="text-align: left;">O nome do construto a ser criado.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">item_names</td>
+<td style="text-align: left;">Um vetor com os nomes dos itens, geralmente criado pelas funções multi_items() ou single_item().</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">weights</td>
+<td style="text-align: left;">Define o modo de estimação para cada modelo de mensuração. - mode_A ou correlation_weights para modelos de mensuração especificados refletivamente. - mode_B ou regression_weights para modelos de mensuração especificados de forma formativa. Mode_A é o valor padrão se os pesos não forem especificado</td>
+</tr>
+</tbody><tfoot>
+<tr class="even">
+<td style="text-align: left; padding: 0;"><sup></sup> Fonte: Partial LeastSquares Structural Equation Modeling (PLS-SEM) Using R</td>
+<td style="text-align: left;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+</figure>
+</div>
+</div>
+<ul>
+<li><p>A <strong>função <code>constructs()</code></strong> é utilizada para compilar uma lista de construtos e suas definições de modelos de mensuração.</p></li>
+<li><p>Permite a inclusão de diversos construtos, como:</p>
+<ul>
+<li><code>composite()</code>: para construtos compostos.</li>
+<li><code>interaction_term()</code>: para termos de interação.</li>
+<li><code>higher_composite()</code>: para modelos de hierarquia.</li>
+</ul></li>
+<li><p>Importante: Nesta fase, não se especifica um conjunto de dados ou um modelo estrutural, permitindo a reutilização do objeto de modelo de mensuração em diferentes contextos.</p></li>
+<li><p>A <strong>Função <code>composite()</code></strong> define o modelo de mensuração de um único construto e aceita os seguintes argumentos (conforme Tabela 3.3):</p>
+<ul>
+<li><code>construct_name</code>: Nome do construto.</li>
+<li><code>item_names</code>: Vetor com os nomes dos itens, geralmente criado por <code>multi_items()</code> ou <code>single_item()</code>.</li>
+<li><code>weights</code>: Define o modo de estimação para cada modelo de mensuração.
+<ul>
+<li><code>mode_A</code>: Para modelos refletivos (padrão se não especificado).</li>
+<li><code>mode_B</code>: Para modelos formativos.</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><strong>Funções de Especificação</strong></p>
+<ul>
+<li><code>multi_items()</code>: Cria um vetor de múltiplos itens de mensuração com nomes semelhantes.</li>
+<li><code>single_item()</code>: Descreve um único item de mensuração.</li>
+</ul>
+<p><strong>Exemplos de Uso</strong></p>
+<ol type="1">
+<li><strong>Definindo o Construto Refletivamente Medido COMP</strong>:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="at">weights =</span> mode_A)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "COMP"   "comp_1" "A"      "COMP"   "comp_2" "A"      "COMP"   "comp_3"
+[9] "A"     
+attr(,"class")
+[1] "character" "construct" "composite"</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>Definindo o Modelo de Mensuração de Item Único CUSA</strong>:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CUSA" "cusa" "A"   
+attr(,"class")
+[1] "character" "construct" "composite"</code></pre>
+</div>
+</div>
+<p>Aqui está um exemplo completo de como utilizar essas funções em um código R:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Criar o modelo de mensuração</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>simple_mm <span class="ot">&lt;-</span> <span class="fu">constructs</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"LIKE"</span>, <span class="fu">multi_items</span>(<span class="st">"like_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>)),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSL"</span>, <span class="fu">multi_items</span>(<span class="st">"cusl_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar o modelo de mensuração</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(simple_mm )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$composite
+[1] "COMP"   "comp_1" "A"      "COMP"   "comp_2" "A"      "COMP"   "comp_3"
+[9] "A"     
+attr(,"class")
+[1] "character" "construct" "composite"
+
+$composite
+[1] "LIKE"   "like_1" "A"      "LIKE"   "like_2" "A"      "LIKE"   "like_3"
+[9] "A"     
+attr(,"class")
+[1] "character" "construct" "composite"
+
+$composite
+[1] "CUSA" "cusa" "A"   
+attr(,"class")
+[1] "character" "construct" "composite"
+
+$composite
+[1] "CUSL"   "cusl_1" "A"      "CUSL"   "cusl_2" "A"      "CUSL"   "cusl_3"
+[9] "A"     
+attr(,"class")
+[1] "character" "construct" "composite"
+
+attr(,"class")
+[1] "list"              "measurement_model" "seminr_model"     </code></pre>
+</div>
+</div>
+<p>Esse código cria um objeto chamado <code>measurement_model</code>, que contém os modelos de mensuração para os construtos COMP, CUSA, LIKE e CUSL, prontos para uso em uma análise PLS-SEM.</p>
+</section>
+<section id="especificação-do-modelo-estrutural-em-seminr" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">1.3</span> Especificação do Modelo Estrutural em SEMinR</h2>
+<p>Após a definição do modelo de mensuração, o próximo passo é especificar o modelo estrutural. Dois aspectos principais devem ser considerados:</p>
+<ol type="1">
+<li><strong>Sequência dos Construtos</strong>: A ordem em que os construtos são organizados no modelo.</li>
+<li><strong>Relacionamentos entre Construtos</strong>: As interações que existem entre eles, fundamentais para a formulação de hipóteses e para a teoria sendo testada.</li>
+</ol>
+<section id="tipos-de-relacionamentos" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="tipos-de-relacionamentos"><span class="header-section-number">1.3.1</span> Tipos de Relacionamentos</h3>
+<ul>
+<li><strong>Relações Lineares Independentes</strong>: Relacionamentos entre construtos que são diretos e unidimensionais.</li>
+<li><strong>Mediação</strong>: Um construto atua como mediador entre outro construto e um resultado.</li>
+<li><strong>Moderação</strong>: Um construto influencia a relação entre dois outros construtos.</li>
+</ul>
+<p>SEMinR utiliza as seguintes funções para tornar a especificação do modelo estrutural mais clara e intuitiva:</p>
+<ul>
+<li><strong><code>relationships()</code></strong>: Especifica todos os relacionamentos estruturais entre os construtos.</li>
+<li><strong><code>paths()</code></strong>: Define as relações entre conjuntos de antecedentes e resultados.</li>
+</ul>
+<p>Para o modelo simples, que envolve relacionamentos entre os construtos COMP, LIKE, CUSA e CUSL, você pode definir os relacionamentos da seguinte forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar o modelo estrutural</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>simple_sm <span class="ot">&lt;-</span> <span class="fu">relationships</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"COMP"</span>, <span class="st">"LIKE"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>, <span class="st">"CUSL"</span>)),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSL"</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>simple_sm </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     source target
+[1,] "COMP" "CUSA"
+[2,] "LIKE" "CUSA"
+[3,] "COMP" "CUSL"
+[4,] "LIKE" "CUSL"
+[5,] "CUSA" "CUSL"
+attr(,"class")
+[1] "matrix"           "array"            "structural_model" "seminr_model"    </code></pre>
+</div>
+</div>
+<ul>
+<li><strong>Reusabilidade</strong>: O objeto <code>simple_sm</code> pode ser reutilizado em diferentes conjuntos de dados e modelos de mensuração, uma vez que a especificação do modelo estrutural não requer um conjunto de dados ou um modelo de mensuração neste estágio.</li>
+<li><strong>Modelo Leigo</strong>: A sintaxe utilizada no SEMinR visa ser acessível e alinhada com a terminologia comum no campo de modelagem estrutural.</li>
+</ul>
+</section>
+</section>
+<section id="estimativa-do-modelo-em-seminr" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="estimativa-do-modelo-em-seminr"><span class="header-section-number">1.4</span> Estimativa do Modelo em SEMinR</h2>
+<p>Após especificar os modelos de mensuração e estrutural, o próximo passo é a estimativa do modelo usando o algoritmo PLS-SEM. Esse processo envolve a determinação das pontuações dos construtos, que serão utilizadas como entrada para os modelos de regressão parciais dentro do modelo de caminho. Uma vez que o algoritmo calcula as pontuações dos construtos, essas pontuações são usadas para estimar cada modelo de regressão parcial, resultando nas estimativas para todos os relacionamentos nos modelos de mensuração (pesos/loads dos indicadores) e no modelo estrutural (coeficientes de caminho).</p>
+<section id="modelos-de-mensuração" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="modelos-de-mensuração"><span class="header-section-number">1.4.1</span> Modelos de Mensuração</h3>
+<p>A configuração dos modelos de mensuração depende de como cada construto é modelado:</p>
+<ol type="1">
+<li><strong>Modelos Reflexivos</strong>: Para construtos modelados como reflexivos, as cargas dos indicadores são geralmente estimadas através do modo A, utilizando regressões bivariadas. Nesse caso, a pontuação do construto é a variável independente, enquanto cada indicador é a variável dependente.</li>
+<li><strong>Modelos Formativos</strong>: Para construtos modelados como formativos, os pesos dos indicadores são estimados usando múltiplas regressões (modo B). Aqui, o construto é a variável dependente e os indicadores são as variáveis independentes.</li>
+</ol>
+<p>Embora a abordagem padrão utilize modo A para modelos reflexivos e modo B para modelos formativos, os pesquisadores podem optar por um modo diferente em situações especiais.</p>
+<p>Os cálculos do modelo estrutural são realizados conforme descrito abaixo: - <strong>Modelos de Regressão Parcial</strong>: Cada construto endógeno é considerado como a variável dependente em um modelo de regressão, com seus precursores diretos (construtos latentes com relação direta) como variáveis independentes. Assim, há um modelo de regressão parcial para cada construto endógeno, permitindo a estimativa de todos os coeficientes de caminho no modelo estrutural.</p>
+</section>
+<section id="procedimentos-iterativos-do-algoritmo-pls-sem" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">1.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</h3>
+<p>O algoritmo PLS-SEM executa a estimativa através de dois estágios:</p>
+<ol type="1">
+<li><strong>Estimativa das Pontuações dos Construtos</strong>: No primeiro estágio, as pontuações dos construtos são estimadas.</li>
+<li><strong>Cálculo Final dos Pesos dos Indicadores</strong>: No segundo estágio, as estimativas finais dos pesos e cargas dos indicadores, bem como os coeficientes de caminho do modelo estrutural e os valores de ( R^2 ) dos construtos latentes endógenos, são calculados.</li>
+</ol>
+</section>
+<section id="configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">1.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</h3>
+<p>Para estimar um modelo de caminho PLS, deve-se selecionar opções algorítmicas e configurações de argumentos. As principais configurações incluem:</p>
+<ul>
+<li><strong><code>inner_weights</code></strong>: Esquema de ponderação para a estimativa do caminho. Pode ser escolhido entre <code>path_weighting</code> (default) ou <code>path_factorial</code>.</li>
+<li><strong><code>missing</code></strong>: Declara qual esquema de valores ausentes deve ser utilizado. O padrão é <code>mean_replacement</code>.</li>
+<li><strong><code>missing_value</code></strong>: Indica o valor a ser usado para denotar valores ausentes nos dados, sendo <code>NA</code> o padrão.</li>
+<li><strong><code>maxIt</code></strong>: Número máximo de iterações para a estimativa do modelo PLS, com um padrão de 300.</li>
+<li><strong><code>stopCriterion</code></strong>: Muda o peso/carga do indicador entre iterações consecutivas, definido como 7 (10⁻⁷).</li>
+</ul>
+<div class="cell">
+<div id="tbl-argumentosdaFuncaocomposite" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-argumentosdaFuncaocomposite-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;2: Argumentos para a Função estimate_pls()
+</figcaption>
+<div aria-describedby="tbl-argumentosdaFuncaocomposite-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Argumento</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">data</td>
+<td style="text-align: left;">O conjunto de dados contendo os dados dos indicadores</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">measurement_model</td>
+<td style="text-align: left;">O modelo de mensuração descrito pela função constructs()</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">structural_model</td>
+<td style="text-align: left;">O modelo estrutural descrito pela função paths()</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">inner_weights</td>
+<td style="text-align: left;">O esquema de ponderação para a estimativa do caminho (pode ser path_weighting ou path_factorial)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">missing</td>
+<td style="text-align: left;">Esquema a ser usado para substituir valores ausentes (default: mean_replacement)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">missing_value</td>
+<td style="text-align: left;">Valor usado para indicar valores ausentes nos dados (default: NA)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">maxIt</td>
+<td style="text-align: left;">Número máximo de iterações ao estimar o modelo PLS (default: 300)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stopCriterion</td>
+<td style="text-align: left;">Mínima mudança nas cargas dos indicadores entre iterações (default: 7)</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Fonte: Partial LeastSquares Structural Equation Modeling (PLS-SEM) Using R</td>
+<td style="text-align: left;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Essa tabela fornece uma visão geral dos principais argumentos que podem ser ajustados na função de estimativa do modelo PLS em SEMinR, permitindo que os pesquisadores personalizem suas análises conforme necessário.</p>
+<p>Para estimar o modelo PLS-SEM usando a função <code>estimate_pls()</code> no R, você deve garantir que os modelos de mensuração e estrutural já estejam definidos e que o conjunto de dados esteja pronto. Aqui está um exemplo de como isso pode ser feito, com explicações sobre cada parte do código:</p>
+<p>O Código R para Estimar o Modelo PLS-SEM</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar o modelo PLS-SEM</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>corp_rep_simple_model <span class="ot">&lt;-</span> <span class="fu">estimate_pls</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> corp_rep_data,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">measurement_model =</span> simple_mm,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">structural_model =</span> simple_sm,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">missing_value =</span> <span class="st">"-99"</span>  <span class="co"># Usar aspas retas</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Explicações dos Argumentos:</strong></p>
+<ul>
+<li><strong>data</strong>: O conjunto de dados (<code>corp_rep_data</code>) que contém os dados dos indicadores.</li>
+<li><strong>measurement_model</strong>: O modelo de mensuração (<code>simple_mm</code>) que foi definido anteriormente com a função <code>constructs()</code>.</li>
+<li><strong>structural_model</strong>: O modelo estrutural (<code>simple_sm</code>) que foi definido anteriormente com a função <code>relationships()</code>.</li>
+<li><strong>inner_weights</strong>: Define o esquema de ponderação a ser utilizado para a estimativa do caminho; neste caso, estamos usando <code>path_weighting</code>.</li>
+<li><strong>missing</strong>: Esquema para lidar com valores ausentes, neste caso, a substituição pela média (<code>mean_replacement</code>).</li>
+<li><strong>missing_value</strong>: Valor utilizado no conjunto de dados para indicar valores ausentes; aqui, o código <code>-99</code> é usado.</li>
+</ul>
+<p>Uma vez que o modelo foi estimado, podemos resumir os resultados e gerar um relatório utilizando a função <code>summary()</code>. Essa função é usada para extrair as saídas e parâmetros de importância de um modelo estimado. O pacote SEMinR oferece suporte ao uso de <code>summary()</code> para as funções <code>estimate_pls()</code>, <code>bootstrap_model()</code>, e <code>predict_pls()</code>.</p>
+<p>Ao aplicar a função <code>summary()</code> em um objeto de modelo SEMinR, ela produz um objeto da classe <code>summary.seminr_model</code>. Esse objeto pode ser armazenado em uma variável e contém várias subestruturas de dados que fornecem informações detalhadas sobre o modelo estimado. A tabela a seguir lista os elementos presentes no objeto <code>summary.seminr_model</code>:</p>
+<div class="cell">
+<div id="tbl-elementosdoObjetosummary-seminr-model" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-elementosdoObjetosummary-seminr-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabela&nbsp;3: Elementos do Objeto summary.seminr_model
+</figcaption>
+<div aria-describedby="tbl-elementosdoObjetosummary-seminr-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table table-striped do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
+<caption>Fonte: Livro Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Sub-Objeto</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">$meta</td>
+<td style="text-align: left;">A função de estimação e informações da versão</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$iterations</td>
+<td style="text-align: left;">O número de iterações para o algoritmo PLS-SEM convergir</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$paths</td>
+<td style="text-align: left;">Os coeficientes de caminho do modelo e os valores de R² (ajustados)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$total_effects</td>
+<td style="text-align: left;">Os efeitos totais do modelo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$total_indirect_effects</td>
+<td style="text-align: left;">Os efeitos indiretos totais do modelo</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$loadings</td>
+<td style="text-align: left;">As cargas dos indicadores para todos os construtos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$weights</td>
+<td style="text-align: left;">Os pesos dos indicadores para todos os construtos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$validity</td>
+<td style="text-align: left;">As métricas necessárias para avaliar a validade das medidas dos construtos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$reliability</td>
+<td style="text-align: left;">As métricas necessárias para avaliar a confiabilidade das medidas dos construtos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$composite_scores</td>
+<td style="text-align: left;">As pontuações estimadas para os construtos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$vif_antecedents</td>
+<td style="text-align: left;">As métricas usadas para avaliar a colinearidade do modelo estrutural</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$fSquare</td>
+<td style="text-align: left;">A métrica f² para todas as relações do modelo estrutural</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$descriptives</td>
+<td style="text-align: left;">As estatísticas descritivas dos dados dos indicadores</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$it_criteria</td>
+<td style="text-align: left;">Os critérios de seleção de modelo com base em informações teóricas para o modelo estimado</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>O objeto <code>summary.seminr_model</code> é fundamental para a análise dos resultados após a estimação do modelo PLS-SEM, proporcionando uma visão abrangente da qualidade e desempenho do modelo.</p>
+<p>Você pode usar o operador $ para acessar os sub-objetos do modelo estimado, conforme descrito na <a href="#tbl-elementosdoObjetosummary-seminr-model" class="quarto-xref">Tabela&nbsp;3</a>. Aqui está um exemplo de como você pode inspecionar cada um dos sub-objetos no seu modelo corp_rep_simple_model após a estimativa do modelo PLS-SEM. O código a seguir mostra como fazer isso em R:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumir os resultados do modelo</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(corp_rep_simple_model)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Results from  package seminr (2.3.4)
+
+Path Coefficients:
+        CUSA  CUSL
+R^2    0.295 0.562
+AdjR^2 0.290 0.558
+COMP   0.162 0.009
+LIKE   0.424 0.342
+CUSA       . 0.504
+
+Reliability:
+     alpha  rhoC   AVE  rhoA
+COMP 0.776 0.865 0.681 0.832
+LIKE 0.831 0.899 0.747 0.836
+CUSA 1.000 1.000 1.000 1.000
+CUSL 0.831 0.899 0.748 0.839
+
+Alpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os coeficientes de caminho do modelo e os valores de R²</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>paths</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        CUSA  CUSL
+R^2    0.295 0.562
+AdjR^2 0.290 0.558
+COMP   0.162 0.009
+LIKE   0.424 0.342
+CUSA       . 0.504</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as métricas de confiabilidade dos construtos</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>reliability</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     alpha  rhoC   AVE  rhoA
+COMP 0.776 0.865 0.681 0.832
+LIKE 0.831 0.899 0.747 0.836
+CUSA 1.000 1.000 1.000 1.000
+CUSL 0.831 0.899 0.748 0.839
+
+Alpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5</code></pre>
+</div>
+</div>
+<p>Aqui está uma explicação da seção sobre <strong>bootstrapping</strong> do modelo PLS-SEM, incluindo detalhes sobre a função <code>bootstrap_model()</code> e como utilizá-la no R.</p>
+</section>
+</section>
+<section id="bootstrapping-do-modelo" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="bootstrapping-do-modelo"><span class="header-section-number">1.5</span> Bootstrapping do Modelo</h2>
+<p>O bootstrapping é uma técnica estatística não paramétrica utilizada para estimar erros padrão e intervalos de confiança em modelos. Para modelos PLS-SEM, essa abordagem é essencial, uma vez que o método não faz suposições paramétricas.</p>
+<p>A <strong>função <code>bootstrap_model()</code> </strong> do pacote SEMinR é usada para realizar bootstrapping em um modelo PLS-SEM previamente estimado. Esta função suporta processamento paralelo, o que significa que pode utilizar múltiplos núcleos do processador, aumentando a eficiência do cálculo.</p>
+<ul>
+<li><strong><code>seminr_model</code>:</strong> O modelo estimado anteriormente (no seu caso, <code>corp_rep_simple_model</code>).</li>
+<li><strong><code>nboot</code>:</strong> O número de subsamples bootstrap a serem gerados. Neste exemplo, você usará <code>1000</code>, mas recomenda-se usar <code>10000</code> para resultados mais robustos.</li>
+<li><strong><code>cores</code>:</strong> O número de núcleos a serem utilizados para o processamento paralelo. Se <code>NULL</code>, o pacote usará todos os núcleos disponíveis.</li>
+<li><strong><code>seed</code>:</strong> Um valor de semente para garantir a reprodutibilidade dos resultados.</li>
+</ul>
+<p>Um exemplo de como você pode realizar o bootstrapping do seu modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Executar o bootstrapping do modelo</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">bootstrap_model</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seminr_model =</span> corp_rep_simple_model,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboot =</span> <span class="dv">1000</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="cn">NULL</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Armazenar o resumo do modelo bootstrapped</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(boot_simple_corp_rep)  <span class="co">#</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Results from Bootstrap resamples:  1000
+
+Bootstrapped Structural Paths:
+               Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
+COMP  -&gt;  CUSA         0.162          0.166        0.068   2.374   0.038
+COMP  -&gt;  CUSL         0.009          0.011        0.056   0.165  -0.098
+LIKE  -&gt;  CUSA         0.424          0.422        0.062   6.858   0.299
+LIKE  -&gt;  CUSL         0.342          0.340        0.056   6.059   0.227
+CUSA  -&gt;  CUSL         0.504          0.504        0.042  11.978   0.419
+               97.5% CI
+COMP  -&gt;  CUSA    0.298
+COMP  -&gt;  CUSL    0.126
+LIKE  -&gt;  CUSA    0.542
+LIKE  -&gt;  CUSL    0.450
+CUSA  -&gt;  CUSL    0.585
+
+Bootstrapped Weights:
+                 Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
+comp_1  -&gt;  COMP         0.536          0.538        0.043  12.381   0.466
+comp_2  -&gt;  COMP         0.340          0.341        0.030  11.264   0.279
+comp_3  -&gt;  COMP         0.328          0.326        0.032  10.290   0.264
+like_1  -&gt;  LIKE         0.418          0.420        0.020  21.072   0.380
+like_2  -&gt;  LIKE         0.378          0.377        0.018  21.387   0.343
+like_3  -&gt;  LIKE         0.360          0.359        0.020  18.086   0.321
+cusa  -&gt;  CUSA           1.000          1.000        0.000       .   1.000
+cusl_1  -&gt;  CUSL         0.369          0.369        0.016  23.430   0.338
+cusl_2  -&gt;  CUSL         0.420          0.421        0.015  28.948   0.395
+cusl_3  -&gt;  CUSL         0.365          0.365        0.015  24.381   0.335
+                 97.5% CI
+comp_1  -&gt;  COMP    0.640
+comp_2  -&gt;  COMP    0.397
+comp_3  -&gt;  COMP    0.384
+like_1  -&gt;  LIKE    0.461
+like_2  -&gt;  LIKE    0.414
+like_3  -&gt;  LIKE    0.398
+cusa  -&gt;  CUSA      1.000
+cusl_1  -&gt;  CUSL    0.401
+cusl_2  -&gt;  CUSL    0.452
+cusl_3  -&gt;  CUSL    0.393
+
+Bootstrapped Loadings:
+                 Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
+comp_1  -&gt;  COMP         0.858          0.858        0.021  41.366   0.813
+comp_2  -&gt;  COMP         0.798          0.797        0.029  27.709   0.730
+comp_3  -&gt;  COMP         0.818          0.814        0.031  26.246   0.746
+like_1  -&gt;  LIKE         0.879          0.880        0.017  51.088   0.843
+like_2  -&gt;  LIKE         0.870          0.869        0.018  47.428   0.830
+like_3  -&gt;  LIKE         0.843          0.842        0.020  41.417   0.799
+cusa  -&gt;  CUSA           1.000          1.000        0.000       .   1.000
+cusl_1  -&gt;  CUSL         0.833          0.832        0.024  35.331   0.780
+cusl_2  -&gt;  CUSL         0.917          0.917        0.010  88.874   0.894
+cusl_3  -&gt;  CUSL         0.843          0.842        0.023  37.134   0.793
+                 97.5% CI
+comp_1  -&gt;  COMP    0.895
+comp_2  -&gt;  COMP    0.843
+comp_3  -&gt;  COMP    0.866
+like_1  -&gt;  LIKE    0.910
+like_2  -&gt;  LIKE    0.900
+like_3  -&gt;  LIKE    0.879
+cusa  -&gt;  CUSA      1.000
+cusl_1  -&gt;  CUSL    0.874
+cusl_2  -&gt;  CUSL    0.935
+cusl_3  -&gt;  CUSL    0.881
+
+Bootstrapped HTMT:
+               Original Est. Bootstrap Mean Bootstrap SD 2.5% CI 97.5% CI
+COMP  -&gt;  LIKE         0.780          0.782        0.041   0.702    0.858
+COMP  -&gt;  CUSA         0.465          0.467        0.060   0.350    0.580
+COMP  -&gt;  CUSL         0.532          0.534        0.059   0.419    0.649
+LIKE  -&gt;  CUSA         0.577          0.577        0.044   0.485    0.657
+LIKE  -&gt;  CUSL         0.737          0.736        0.041   0.655    0.814
+CUSA  -&gt;  CUSL         0.755          0.755        0.034   0.689    0.817
+
+Bootstrapped Total Paths:
+               Original Est. Bootstrap Mean Bootstrap SD 2.5% CI 97.5% CI
+COMP  -&gt;  CUSA         0.162          0.166        0.068   0.038    0.298
+COMP  -&gt;  CUSL         0.091          0.095        0.068  -0.037    0.228
+LIKE  -&gt;  CUSA         0.424          0.422        0.062   0.299    0.542
+LIKE  -&gt;  CUSL         0.556          0.554        0.062   0.433    0.670
+CUSA  -&gt;  CUSL         0.504          0.504        0.042   0.419    0.585</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os caminhos estruturais bootstrapped</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_paths <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_paths</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_paths)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
+COMP  -&gt;  CUSA         0.162          0.166        0.068   2.374   0.038
+COMP  -&gt;  CUSL         0.009          0.011        0.056   0.165  -0.098
+LIKE  -&gt;  CUSA         0.424          0.422        0.062   6.858   0.299
+LIKE  -&gt;  CUSL         0.342          0.340        0.056   6.059   0.227
+CUSA  -&gt;  CUSL         0.504          0.504        0.042  11.978   0.419
+               97.5% CI
+COMP  -&gt;  CUSA    0.298
+COMP  -&gt;  CUSL    0.126
+LIKE  -&gt;  CUSA    0.542
+LIKE  -&gt;  CUSL    0.450
+CUSA  -&gt;  CUSL    0.585</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as cargas dos indicadores bootstrapped</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_loadings <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_loadings)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
+comp_1  -&gt;  COMP         0.858          0.858        0.021  41.366   0.813
+comp_2  -&gt;  COMP         0.798          0.797        0.029  27.709   0.730
+comp_3  -&gt;  COMP         0.818          0.814        0.031  26.246   0.746
+like_1  -&gt;  LIKE         0.879          0.880        0.017  51.088   0.843
+like_2  -&gt;  LIKE         0.870          0.869        0.018  47.428   0.830
+like_3  -&gt;  LIKE         0.843          0.842        0.020  41.417   0.799
+cusa  -&gt;  CUSA           1.000          1.000        0.000       .   1.000
+cusl_1  -&gt;  CUSL         0.833          0.832        0.024  35.331   0.780
+cusl_2  -&gt;  CUSL         0.917          0.917        0.010  88.874   0.894
+cusl_3  -&gt;  CUSL         0.843          0.842        0.023  37.134   0.793
+                 97.5% CI
+comp_1  -&gt;  COMP    0.895
+comp_2  -&gt;  COMP    0.843
+comp_3  -&gt;  COMP    0.866
+like_1  -&gt;  LIKE    0.910
+like_2  -&gt;  LIKE    0.900
+like_3  -&gt;  LIKE    0.879
+cusa  -&gt;  CUSA      1.000
+cusl_1  -&gt;  CUSL    0.874
+cusl_2  -&gt;  CUSL    0.935
+cusl_3  -&gt;  CUSL    0.881</code></pre>
+</div>
+</div>
+<ul>
+<li><strong>Tempo de Execução:</strong> O bootstrapping pode levar algum tempo, especialmente se o número de subsamples for elevado (como 10,000). O R pode parecer estar inativo durante esse processo, mas é normal.</li>
+<li><strong>Interpretação dos Resultados:</strong> Os resultados do bootstrapping fornecerão erros padrão e intervalos de confiança para os coeficientes de caminho, ajudando a avaliar a significância estatística das relações entre os construtos.</li>
+</ul>
+<p>Essa abordagem de bootstrapping é crucial para a validade dos resultados obtidos no modelo PLS-SEM, permitindo uma análise mais robusta e confiável.</p>
+</section>
+<section id="exportação-de-resultados-e-gráficos-do-seminr" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">1.6</span> Exportação de Resultados e Gráficos do SEMinR</h2>
+<p>Após a estimativa, avaliação e análise do modelo, muitas vezes é necessário exportar os resultados gerados no R para um relatório, como um documento do Apache OpenOffice Writer (.odt) ou uma apresentação do Microsoft PowerPoint (.ppt ou .pptx). Ao longo deste livro, fornecemos capturas de tela para demonstrar as saídas do código no console do RStudio. No entanto, não recomendamos o uso desse método para copiar e colar resultados em relatórios ou artigos de pesquisa. Em vez disso, recomendamos exportar tabelas e matrizes para arquivos .csv, que podem ser importados para documentos ou apresentações, e que figuras sejam exportadas para arquivos .pdf para garantir a melhor qualidade de impressão.</p>
+<section id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">1.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</h3>
+<p>Depois de escrever os carregamentos bootstrap em um arquivo CSV, você pode usar o seguinte código em R:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Escrever o objeto de caminhos bootstrap em um arquivo CSV</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="at">x =</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">file =</span> <span class="st">"boot_loadings.csv"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Uma vez que o arquivo <code>boot_loadings.csv</code> foi salvo no diretório de trabalho, você pode abri-lo com o Apache OpenOffice Calc, Microsoft Excel ou outro software de planilha. Esses aplicativos permitem a formatação e edição da tabela para produzir tabelas de alta qualidade em relatórios.</p>
+</section>
+<section id="gerando-gráficos-de-alta-qualidade" class="level3" data-number="1.6.2">
+<h3 data-number="1.6.2" class="anchored" data-anchor-id="gerando-gráficos-de-alta-qualidade"><span class="header-section-number">1.6.2</span> Gerando Gráficos de Alta Qualidade</h3>
+<p>Para gerar gráficos a partir dos resultados do SEMinR, siga os passos abaixo:</p>
+<p>Use a função <code>plot()</code> para visualizar as confiabilidades internas dos construtos, como Cronbach’s alpha, rhoA e rhoC.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Gerar um gráfico da confiabilidade dos construtos</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">plot</span>(summary_simple_corp_rep<span class="sc">$</span>reliability)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SEMinR_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ao seguir esses passos, você garantirá que seus resultados e gráficos estejam prontos para serem incluídos em documentos e relatórios de forma profissional e com alta qualidade de impressão.</p>
+</section>
+</section>
+</section>
+<section id="referência" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Referência</h1>
+<p>HAIR, J. F. et al.<strong>Partial least squares structural equation modeling (PLS-SEM) using R : a workbook</strong>. Cham, Switzerland: Springer, 2021.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiada");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiada");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

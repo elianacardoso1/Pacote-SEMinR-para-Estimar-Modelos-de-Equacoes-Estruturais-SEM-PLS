@@ -1,0 +1,486 @@
+---
+title: "Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)"
+subtitle: "Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R"
+author: "Eliana Cardoso Gonçalves"
+date: "`r Sys.Date()`" 
+date-format: short # formatação dd/mm/aaaa
+lang: pt # linguagem
+toc: true # índice
+number-sections: true
+fig-cap-location: top # localização do título da figura 
+geometry:
+  - top=3cm
+  - left=3cm
+  - right=2cm
+  - bottom=2cm
+tbl-cap-location: top
+df-print: kable # saída dos data frames serem kable
+fig-width: 10
+fig-height: 4
+format: 
+  html:
+     css: styles.css
+  pdf: 
+    documentclass: scrreprt
+  docx: default
+editor: 
+  markdown: 
+    wrap: 72
+editor_options:
+  chunk_output_type: console
+output: 
+  pdf_document:
+    margin: 1in
+    df_print:
+      digits: 3
+  word_document:
+    fig_caption: true
+    df_print: kable
+prefer-html: true
+execute:
+  echo: true
+  warning: false
+---
+
+```{css, echo= FALSE}
+body {
+  text-align: justify;
+}
+
+```
+
+```{r, echo=FALSE}
+library(kableExtra)
+library(knitr)
+```
+
+# SEMinR
+
+
+O SEMinR é um pacote de software desenvolvido para o ambiente estatístico R, que traz uma sintaxe amigável para criar e estimar modelos de equações estruturais (SEM). Ele é open source, o que significa que qualquer pessoa pode inspecionar, modificar e aprimorar o código-fonte. O SEMinR é distribuído sob a Licença Pública Geral GNU versão 3 (GPL-3), permitindo seu uso gratuito para fins pessoais, acadêmicos e comerciais, desde que qualquer alteração ou aplicação derivada também seja de código aberto.
+
+O SEMinR está hospedado no GitHub, onde os usuários são incentivados a seguir a página e contribuir para o projeto, além de reportar problemas por meio do recurso de issues. Há também um grupo no Facebook onde os desenvolvedores e usuários discutem novidades, práticas recomendadas e tutoriais sobre o SEMinR.
+
+A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote **lavaan** para a estimativa CB-SEM.
+
+O desenvolvimento do SEMinR está em constante melhoria, incorporando novos métodos e oferecendo opções úteis de relatórios. Para usar o SEMinR, é necessário instalá-lo no RStudio, sendo recomendada a atualização para a versão mais recente do R e RStudio, se necessário.
+
+O processo para especificar e estimar um modelo de equações estruturais no SEMinR envolve quatro etapas principais:
+
+1. **Carregar e limpar os dados:** Importar os dados e realizar qualquer limpeza necessária para garantir que estejam prontos para análise.
+2. **Especificar os modelos de mensuração:** Definir os construtos e como eles serão medidos, como no exemplo do modelo de reputação corporativa.
+3. **Especificar o modelo estrutural:** Estabelecer as relações entre os construtos, identificando quais são os exógenos e endógenos.
+4. **Estimar, realizar o bootstrap e resumir o modelo:** Estimar o modelo, aplicar o bootstrap para validar os resultados e gerar um resumo da análise.
+
+
+## Carregando e Limpando os Dados 
+Os arquivos CSV (Comma-Separated Values) são arquivos de texto onde cada linha representa os dados de um sujeito, com valores correspondentes a variáveis separadas por vírgulas ou outros caracteres, como ponto e vírgula. A primeira linha geralmente contém os nomes das variáveis (linha de cabeçalho). Para carregar um arquivo CSV no R, utiliza-se a função `read.csv()`, e a documentação pode ser acessada com `?read.csv`. 
+
+```{r}
+# Instalar e Carregar o Pacote
+#install.packages("seminr")
+library(seminr)
+
+# Importar banco de dados
+corp_rep_data <- read.csv(file = "Corporate Reputation Data.csv", header = TRUE, sep = ";")
+head(corp_rep_data )
+```
+## Especificando os Modelos de Mensuração
+
+Os modelos de caminho consistem em dois elementos: 
+
+  1. **Modelos de mensuração (ou modelos externos)**: descrevem as relações entre as variáveis latentes e seus indicadores.
+  2. **Modelo estrutural (ou modelo interno)**: descreve as relações entre as variáveis latentes.
+
+Para especificar os modelos de mensuração, baseamo-nos na teoria de mensuração, que é essencial para obter resultados úteis em análises PLS-SEM. A validade das relações estruturais entre os construtos depende da qualidade das medidas dos construtos.
+
+O SEMinR utiliza a função `constructs()` para especificar a lista de todos os modelos de mensuração dos construtos. Dentro dessa lista, podemos definir diferentes construtos por meio das seguintes funções:
+
+- `composite()`: especifica a mensuração de construtos individuais.
+- `interaction_term()`: especifica termos de interação.
+- `higher_composite()`: especifica modelos de componentes hierárquicos (construtos de ordem superior).
+
+Esses elementos são fundamentais para garantir que os modelos de mensuração sejam robustos e confiáveis.
+
+```{r, echo=FALSE}
+#| tbl-cap: "Argumentos da Função composite()"
+#| label: tbl-argumentosdafuncao-compisite
+
+
+# Criar os dados da tabela
+tabela_composite <- data.frame(
+  Argumento = c("construct_name", "item_names", "weights"),
+  Valor = c(
+    "O nome do construto a ser criado.",
+    "Um vetor com os nomes dos itens, geralmente criado pelas funções multi_items() ou single_item().",
+    "Define o modo de estimação para cada modelo de mensuração.\n- mode_A ou correlation_weights para modelos de mensuração especificados refletivamente.\n- mode_B ou regression_weights para modelos de mensuração especificados de forma formativa.\nMode_A é o valor padrão se os pesos não forem especificados."
+  )
+)
+
+# Exibir a tabela
+kable(tabela_composite)%>%
+  kable_styling(full_width = F, position = "center") %>% # Estilização e centralização
+  footnote(general = "Fonte: Partial LeastSquares Structural Equation Modeling (PLS-SEM) Using R", # Texto da fonte
+           general_title = "", # Título do texto da fonte (deixe vazio para não mostrar)
+           footnote_as_chunk = TRUE) # Para garantir que a fonte seja formatada corretamente
+
+```
+
+
+
+
+- A **função `constructs()`** é utilizada para compilar uma lista de construtos e suas definições de modelos de mensuração.
+- Permite a inclusão de diversos construtos, como:
+  - `composite()`: para construtos compostos.
+  - `interaction_term()`: para termos de interação.
+  - `higher_composite()`: para modelos de hierarquia.
+- Importante: Nesta fase, não se especifica um conjunto de dados ou um modelo estrutural, permitindo a reutilização do objeto de modelo de mensuração em diferentes contextos.
+
+
+
+- A **Função `composite()`** define o modelo de mensuração de um único construto e aceita os seguintes argumentos (conforme Tabela 3.3):
+  - `construct_name`: Nome do construto.
+  - `item_names`: Vetor com os nomes dos itens, geralmente criado por `multi_items()` ou `single_item()`.
+  - `weights`: Define o modo de estimação para cada modelo de mensuração.
+    - `mode_A`: Para modelos refletivos (padrão se não especificado).
+    - `mode_B`: Para modelos formativos.
+
+**Funções de Especificação**
+
+- `multi_items()`: Cria um vetor de múltiplos itens de mensuração com nomes semelhantes.
+- `single_item()`: Descreve um único item de mensuração.
+
+**Exemplos de Uso**
+
+1. **Definindo o Construto Refletivamente Medido COMP**:
+```{r}
+composite("COMP", multi_items("comp_", 1:3), weights = mode_A)
+```
+
+2. **Definindo o Modelo de Mensuração de Item Único CUSA**:
+```{r}
+composite("CUSA", single_item("cusa"))
+```
+
+Aqui está um exemplo completo de como utilizar essas funções em um código R:
+
+```{r}
+# 3. Criar o modelo de mensuração
+simple_mm <- constructs(
+  composite("COMP", multi_items("comp_", 1:3)),
+  composite("LIKE", multi_items("like_", 1:3)),
+  composite("CUSA", single_item("cusa")),
+  composite("CUSL", multi_items("cusl_", 1:3))
+)
+
+
+# Verificar o modelo de mensuração
+print(simple_mm )
+```
+
+Esse código cria um objeto chamado `measurement_model`, que contém os modelos de mensuração para os construtos COMP, CUSA, LIKE e CUSL, prontos para uso em uma análise PLS-SEM.
+
+## Especificação do Modelo Estrutural em SEMinR
+
+
+Após a definição do modelo de mensuração, o próximo passo é especificar o modelo estrutural. Dois aspectos principais devem ser considerados:
+
+1. **Sequência dos Construtos**: A ordem em que os construtos são organizados no modelo.
+2. **Relacionamentos entre Construtos**: As interações que existem entre eles, fundamentais para a formulação de hipóteses e para a teoria sendo testada.
+
+### Tipos de Relacionamentos
+
+- **Relações Lineares Independentes**: Relacionamentos entre construtos que são diretos e unidimensionais.
+- **Mediação**: Um construto atua como mediador entre outro construto e um resultado.
+- **Moderação**: Um construto influencia a relação entre dois outros construtos.
+
+
+
+
+SEMinR utiliza as seguintes funções para tornar a especificação do modelo estrutural mais clara e intuitiva:
+
+- **`relationships()`**: Especifica todos os relacionamentos estruturais entre os construtos.
+- **`paths()`**: Define as relações entre conjuntos de antecedentes e resultados.
+
+
+Para o modelo simples, que envolve relacionamentos entre os construtos COMP, LIKE, CUSA e CUSL, você pode definir os relacionamentos da seguinte forma:
+
+```{r}
+# Criar o modelo estrutural
+simple_sm <- relationships(
+  paths(from = c("COMP", "LIKE"), to = c("CUSA", "CUSL")),
+  paths(from = c("CUSA"), to = c("CUSL"))
+)
+simple_sm 
+```
+
+- **Reusabilidade**: O objeto `simple_sm` pode ser reutilizado em diferentes conjuntos de dados e modelos de mensuração, uma vez que a especificação do modelo estrutural não requer um conjunto de dados ou um modelo de mensuração neste estágio. 
+- **Modelo Leigo**: A sintaxe utilizada no SEMinR visa ser acessível e alinhada com a terminologia comum no campo de modelagem estrutural.
+
+
+## Estimativa do Modelo em SEMinR
+
+Após especificar os modelos de mensuração e estrutural, o próximo passo é a estimativa do modelo usando o algoritmo PLS-SEM. Esse processo envolve a determinação das pontuações dos construtos, que serão utilizadas como entrada para os modelos de regressão parciais dentro do modelo de caminho. Uma vez que o algoritmo calcula as pontuações dos construtos, essas pontuações são usadas para estimar cada modelo de regressão parcial, resultando nas estimativas para todos os relacionamentos nos modelos de mensuração (pesos/loads dos indicadores) e no modelo estrutural (coeficientes de caminho).
+
+### Modelos de Mensuração
+
+A configuração dos modelos de mensuração depende de como cada construto é modelado:
+
+  1. **Modelos Reflexivos**: Para construtos modelados como reflexivos, as cargas dos indicadores são geralmente estimadas através do modo A, utilizando regressões bivariadas. Nesse caso, a pontuação do construto é a variável independente, enquanto cada indicador é a variável dependente.
+  2. **Modelos Formativos**: Para construtos modelados como formativos, os pesos dos indicadores são estimados usando múltiplas regressões (modo B). Aqui, o construto é a variável dependente e os indicadores são as variáveis independentes.
+
+Embora a abordagem padrão utilize modo A para modelos reflexivos e modo B para modelos formativos, os pesquisadores podem optar por um modo diferente em situações especiais.
+
+
+Os cálculos do modelo estrutural são realizados conforme descrito abaixo:
+- **Modelos de Regressão Parcial**: Cada construto endógeno é considerado como a variável dependente em um modelo de regressão, com seus precursores diretos (construtos latentes com relação direta) como variáveis independentes. Assim, há um modelo de regressão parcial para cada construto endógeno, permitindo a estimativa de todos os coeficientes de caminho no modelo estrutural.
+
+### Procedimentos Iterativos do Algoritmo PLS-SEM
+
+O algoritmo PLS-SEM executa a estimativa através de dois estágios:
+
+  1. **Estimativa das Pontuações dos Construtos**: No primeiro estágio, as pontuações dos construtos são estimadas.
+  2. **Cálculo Final dos Pesos dos Indicadores**: No segundo estágio, as estimativas finais dos pesos e cargas dos indicadores, bem como os coeficientes de caminho do modelo estrutural e os valores de \( R^2 \) dos construtos latentes endógenos, são calculados.
+
+### Configurações do Algoritmo para Estimativa do Modelo PLS
+
+Para estimar um modelo de caminho PLS, deve-se selecionar opções algorítmicas e configurações de argumentos. As principais configurações incluem:
+
+- **`inner_weights`**: Esquema de ponderação para a estimativa do caminho. Pode ser escolhido entre `path_weighting` (default) ou `path_factorial`.
+- **`missing`**: Declara qual esquema de valores ausentes deve ser utilizado. O padrão é `mean_replacement`.
+- **`missing_value`**: Indica o valor a ser usado para denotar valores ausentes nos dados, sendo `NA` o padrão.
+- **`maxIt`**: Número máximo de iterações para a estimativa do modelo PLS, com um padrão de 300.
+- **`stopCriterion`**: Muda o peso/carga do indicador entre iterações consecutivas, definido como 7 (10⁻⁷).
+
+
+```{r,echo=FALSE}
+#| tbl-cap: "Argumentos para a Função estimate_pls()"
+#| label: tbl-argumentosdaFuncaocomposite
+
+
+# Criar um data frame com os argumentos
+arguments_df <- data.frame(
+  Argumento = c("data", "measurement_model", "structural_model", "inner_weights", 
+                "missing", "missing_value", "maxIt", "stopCriterion"),
+  Valor = c("O conjunto de dados contendo os dados dos indicadores",
+            "O modelo de mensuração descrito pela função constructs()",
+            "O modelo estrutural descrito pela função paths()",
+            "O esquema de ponderação para a estimativa do caminho (pode ser path_weighting ou path_factorial)",
+            "Esquema a ser usado para substituir valores ausentes (default: mean_replacement)",
+            "Valor usado para indicar valores ausentes nos dados (default: NA)",
+            "Número máximo de iterações ao estimar o modelo PLS (default: 300)",
+            "Mínima mudança nas cargas dos indicadores entre iterações (default: 7)")
+)
+
+# Exibir a tabela
+kable(arguments_df)%>%
+  kable_styling(full_width = F, position = "center") %>% # Estilização e centralização
+  footnote(general = "Fonte: Partial LeastSquares Structural Equation Modeling (PLS-SEM) Using R", # Texto da fonte
+           general_title = "", # Título do texto da fonte (deixe vazio para não mostrar)
+           footnote_as_chunk = TRUE) 
+
+
+```
+
+Essa tabela fornece uma visão geral dos principais argumentos que podem ser ajustados na função de estimativa do modelo PLS em SEMinR, permitindo que os pesquisadores personalizem suas análises conforme necessário.
+
+Para estimar o modelo PLS-SEM usando a função `estimate_pls()` no R, você deve garantir que os modelos de mensuração e estrutural já estejam definidos e que o conjunto de dados esteja pronto. Aqui está um exemplo de como isso pode ser feito, com explicações sobre cada parte do código:
+
+O Código R para Estimar o Modelo PLS-SEM
+
+```{R}
+# Estimar o modelo PLS-SEM
+corp_rep_simple_model <- estimate_pls(
+  data = corp_rep_data,
+  measurement_model = simple_mm,
+  structural_model = simple_sm,
+  missing_value = "-99"  # Usar aspas retas
+)
+
+
+```
+
+**Explicações dos Argumentos:**
+
+- **data**: O conjunto de dados (`corp_rep_data`) que contém os dados dos indicadores.
+- **measurement_model**: O modelo de mensuração (`simple_mm`) que foi definido anteriormente com a função `constructs()`.
+- **structural_model**: O modelo estrutural (`simple_sm`) que foi definido anteriormente com a função `relationships()`.
+- **inner_weights**: Define o esquema de ponderação a ser utilizado para a estimativa do caminho; neste caso, estamos usando `path_weighting`.
+- **missing**: Esquema para lidar com valores ausentes, neste caso, a substituição pela média (`mean_replacement`).
+- **missing_value**: Valor utilizado no conjunto de dados para indicar valores ausentes; aqui, o código `-99` é usado.
+
+
+
+Uma vez que o modelo foi estimado, podemos resumir os resultados e gerar um relatório utilizando a função `summary()`. Essa função é usada para extrair as saídas e parâmetros de importância de um modelo estimado. O pacote SEMinR oferece suporte ao uso de `summary()` para as funções `estimate_pls()`, `bootstrap_model()`, e `predict_pls()`.
+
+Ao aplicar a função `summary()` em um objeto de modelo SEMinR, ela produz um objeto da classe `summary.seminr_model`. Esse objeto pode ser armazenado em uma variável e contém várias subestruturas de dados que fornecem informações detalhadas sobre o modelo estimado. A tabela a seguir lista os elementos presentes no objeto `summary.seminr_model`:
+
+
+
+```{r, echo=FALSE}
+#| tbl-cap: "Elementos do Objeto summary.seminr_model"
+#| label: tbl-elementosdoObjetosummary-seminr-model
+
+# Criar um data frame com os elementos do objeto summary.seminr_model
+tabela_resumo_modelo <- data.frame(
+  Sub_objeto = c(
+    "$meta", 
+    "$iterations", 
+    "$paths", 
+    "$total_effects", 
+    "$total_indirect_effects", 
+    "$loadings", 
+    "$weights", 
+    "$validity", 
+    "$reliability", 
+    "$composite_scores", 
+    "$vif_antecedents", 
+    "$fSquare", 
+    "$descriptives", 
+    "$it_criteria"
+  ),
+  Contém = c(
+    "A função de estimação e informações da versão",
+    "O número de iterações para o algoritmo PLS-SEM convergir",
+    "Os coeficientes de caminho do modelo e os valores de R² (ajustados)",
+    "Os efeitos totais do modelo",
+    "Os efeitos indiretos totais do modelo",
+    "As cargas dos indicadores para todos os construtos",
+    "Os pesos dos indicadores para todos os construtos",
+    "As métricas necessárias para avaliar a validade das medidas dos construtos",
+    "As métricas necessárias para avaliar a confiabilidade das medidas dos construtos",
+    "As pontuações estimadas para os construtos",
+    "As métricas usadas para avaliar a colinearidade do modelo estrutural",
+    "A métrica f² para todas as relações do modelo estrutural",
+    "As estatísticas descritivas dos dados dos indicadores",
+    "Os critérios de seleção de modelo com base em informações teóricas para o modelo estimado"
+  ),
+  stringsAsFactors = FALSE # Evitar fatores para melhor formatação
+)
+
+# Exibir a tabela formatada com fonte
+kable(tabela_resumo_modelo, 
+      col.names = c("Sub-Objeto", "Descrição"), # Cabeçalhos da tabela
+      caption = "Fonte: Livro Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R", # Legenda da tabela com fonte
+      format = "html", # Formato HTML para melhor apresentação
+      table.attr = 'class="table table-striped"' # Classe CSS para tabelas estilizadas
+) %>%
+  kable_styling(full_width = F, position = "center") # Estilização e centralização
+
+```
+
+
+
+O objeto `summary.seminr_model` é fundamental para a análise dos resultados após a estimação do modelo PLS-SEM, proporcionando uma visão abrangente da qualidade e desempenho do modelo.
+
+
+Você pode usar o operador $ para acessar os sub-objetos do modelo estimado, conforme descrito na @tbl-elementosdoObjetosummary-seminr-model. Aqui está um exemplo de como você pode inspecionar cada um dos sub-objetos no seu modelo corp_rep_simple_model após a estimativa do modelo PLS-SEM. O código a seguir mostra como fazer isso em R:
+
+```{r}
+# Resumir os resultados do modelo
+summary_simple_corp_rep <- summary(corp_rep_simple_model)
+summary_simple_corp_rep
+```
+
+
+```{r}
+# Inspecionar os coeficientes de caminho do modelo e os valores de R²
+summary_simple_corp_rep$paths
+
+# Inspecionar as métricas de confiabilidade dos construtos
+summary_simple_corp_rep$reliability
+
+```
+Aqui está uma explicação da seção sobre **bootstrapping** do modelo PLS-SEM, incluindo detalhes sobre a função `bootstrap_model()` e como utilizá-la no R.
+
+## Bootstrapping do Modelo
+
+O bootstrapping é uma técnica estatística não paramétrica utilizada para estimar erros padrão e intervalos de confiança em modelos. Para modelos PLS-SEM, essa abordagem é essencial, uma vez que o método não faz suposições paramétricas. 
+
+
+A **função `bootstrap_model()` ** do pacote SEMinR é usada para realizar bootstrapping em um modelo PLS-SEM previamente estimado. Esta função suporta processamento paralelo, o que significa que pode utilizar múltiplos núcleos do processador, aumentando a eficiência do cálculo.
+
+
+- **`seminr_model`:** O modelo estimado anteriormente (no seu caso, `corp_rep_simple_model`).
+- **`nboot`:** O número de subsamples bootstrap a serem gerados. Neste exemplo, você usará `1000`, mas recomenda-se usar `10000` para resultados mais robustos.
+- **`cores`:** O número de núcleos a serem utilizados para o processamento paralelo. Se `NULL`, o pacote usará todos os núcleos disponíveis.
+- **`seed`:** Um valor de semente para garantir a reprodutibilidade dos resultados.
+
+
+
+
+Um exemplo de como você pode realizar o bootstrapping do seu modelo:
+
+```{r}
+# Executar o bootstrapping do modelo
+boot_simple_corp_rep <- bootstrap_model(
+  seminr_model = corp_rep_simple_model,
+  nboot = 1000,
+  cores = NULL,
+  seed = 123
+)
+
+
+# Armazenar o resumo do modelo bootstrapped
+sum_boot_simple_corp_rep <- summary(boot_simple_corp_rep)  #
+sum_boot_simple_corp_rep 
+```
+
+
+```{r}
+# Inspecionar os caminhos estruturais bootstrapped
+bootstrapped_paths <- sum_boot_simple_corp_rep$bootstrapped_paths
+print(bootstrapped_paths)
+
+# Inspecionar as cargas dos indicadores bootstrapped
+bootstrapped_loadings <- sum_boot_simple_corp_rep$bootstrapped_loadings
+print(bootstrapped_loadings)
+
+```
+
+
+
+- **Tempo de Execução:** O bootstrapping pode levar algum tempo, especialmente se o número de subsamples for elevado (como 10,000). O R pode parecer estar inativo durante esse processo, mas é normal.
+- **Interpretação dos Resultados:** Os resultados do bootstrapping fornecerão erros padrão e intervalos de confiança para os coeficientes de caminho, ajudando a avaliar a significância estatística das relações entre os construtos.
+
+Essa abordagem de bootstrapping é crucial para a validade dos resultados obtidos no modelo PLS-SEM, permitindo uma análise mais robusta e confiável.
+
+
+
+## Exportação de Resultados e Gráficos do SEMinR
+
+Após a estimativa, avaliação e análise do modelo, muitas vezes é necessário exportar os resultados gerados no R para um relatório, como um documento do Apache OpenOffice Writer (.odt) ou uma apresentação do Microsoft PowerPoint (.ppt ou .pptx). Ao longo deste livro, fornecemos capturas de tela para demonstrar as saídas do código no console do RStudio. No entanto, não recomendamos o uso desse método para copiar e colar resultados em relatórios ou artigos de pesquisa. Em vez disso, recomendamos exportar tabelas e matrizes para arquivos .csv, que podem ser importados para documentos ou apresentações, e que figuras sejam exportadas para arquivos .pdf para garantir a melhor qualidade de impressão. 
+
+
+### Exportando os Carregamentos Bootstrap para um Arquivo CSV
+
+Depois de escrever os carregamentos bootstrap em um arquivo CSV, você pode usar o seguinte código em R:
+
+```{r}
+# Escrever o objeto de caminhos bootstrap em um arquivo CSV
+write.csv(x = sum_boot_simple_corp_rep$bootstrapped_loadings,
+          file = "boot_loadings.csv")
+```
+
+Uma vez que o arquivo `boot_loadings.csv` foi salvo no diretório de trabalho, você pode abri-lo com o Apache OpenOffice Calc, Microsoft Excel ou outro software de planilha. Esses aplicativos permitem a formatação e edição da tabela para produzir tabelas de alta qualidade em relatórios. 
+
+### Gerando Gráficos de Alta Qualidade
+
+Para gerar gráficos a partir dos resultados do SEMinR, siga os passos abaixo:
+
+Use a função `plot()` para visualizar as confiabilidades internas dos construtos, como Cronbach's alpha, rhoA e rhoC.
+
+```{r}
+   # Gerar um gráfico da confiabilidade dos construtos
+   plot(summary_simple_corp_rep$reliability)
+```
+
+Ao seguir esses passos, você garantirá que seus resultados e gráficos estejam prontos para serem incluídos em documentos e relatórios de forma profissional e com alta qualidade de impressão.
+
+# Referência
+
+HAIR, J. F. et al.**Partial least squares structural equation modeling (PLS-SEM) using R : a workbook**. Cham, Switzerland: Springer, 2021.
+
+
+
+
