@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eliana Cardoso Gonçalves">
+<meta name="dcterms.date" content="2024-04-12">
 
 <title>Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)</title>
 <style>
@@ -85,28 +86,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Índice</h2>
    
   <ul>
-  <li><a href="#seminr" id="toc-seminr" class="nav-link active" data-scroll-target="#seminr"><span class="header-section-number">1</span> SEMinR</a>
+  <li><a href="#modelagem-de-equação-estrutural-sem" id="toc-modelagem-de-equação-estrutural-sem" class="nav-link active" data-scroll-target="#modelagem-de-equação-estrutural-sem"><span class="header-section-number">1</span> Modelagem de Equação Estrutural (SEM)</a>
   <ul class="collapse">
-  <li><a href="#carregando-e-limpando-os-dados" id="toc-carregando-e-limpando-os-dados" class="nav-link" data-scroll-target="#carregando-e-limpando-os-dados"><span class="header-section-number">1.1</span> Carregando e Limpando os Dados</a></li>
-  <li><a href="#especificando-os-modelos-de-mensuração" id="toc-especificando-os-modelos-de-mensuração" class="nav-link" data-scroll-target="#especificando-os-modelos-de-mensuração"><span class="header-section-number">1.2</span> Especificando os Modelos de Mensuração</a></li>
-  <li><a href="#especificação-do-modelo-estrutural-em-seminr" id="toc-especificação-do-modelo-estrutural-em-seminr" class="nav-link" data-scroll-target="#especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">1.3</span> Especificação do Modelo Estrutural em SEMinR</a>
+  <li><a href="#métodos-de-estimação" id="toc-métodos-de-estimação" class="nav-link" data-scroll-target="#métodos-de-estimação"><span class="header-section-number">1.1</span> Métodos de Estimação</a>
   <ul class="collapse">
-  <li><a href="#tipos-de-relacionamentos" id="toc-tipos-de-relacionamentos" class="nav-link" data-scroll-target="#tipos-de-relacionamentos"><span class="header-section-number">1.3.1</span> Tipos de Relacionamentos</a></li>
-  </ul></li>
-  <li><a href="#estimativa-do-modelo-em-seminr" id="toc-estimativa-do-modelo-em-seminr" class="nav-link" data-scroll-target="#estimativa-do-modelo-em-seminr"><span class="header-section-number">1.4</span> Estimativa do Modelo em SEMinR</a>
-  <ul class="collapse">
-  <li><a href="#modelos-de-mensuração" id="toc-modelos-de-mensuração" class="nav-link" data-scroll-target="#modelos-de-mensuração"><span class="header-section-number">1.4.1</span> Modelos de Mensuração</a></li>
-  <li><a href="#procedimentos-iterativos-do-algoritmo-pls-sem" id="toc-procedimentos-iterativos-do-algoritmo-pls-sem" class="nav-link" data-scroll-target="#procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">1.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</a></li>
-  <li><a href="#configurações-do-algoritmo-para-estimativa-do-modelo-pls" id="toc-configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="nav-link" data-scroll-target="#configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">1.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</a></li>
-  </ul></li>
-  <li><a href="#bootstrapping-do-modelo" id="toc-bootstrapping-do-modelo" class="nav-link" data-scroll-target="#bootstrapping-do-modelo"><span class="header-section-number">1.5</span> Bootstrapping do Modelo</a></li>
-  <li><a href="#exportação-de-resultados-e-gráficos-do-seminr" id="toc-exportação-de-resultados-e-gráficos-do-seminr" class="nav-link" data-scroll-target="#exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">1.6</span> Exportação de Resultados e Gráficos do SEMinR</a>
-  <ul class="collapse">
-  <li><a href="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" id="toc-exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="nav-link" data-scroll-target="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">1.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</a></li>
-  <li><a href="#gerando-gráficos-de-alta-qualidade" id="toc-gerando-gráficos-de-alta-qualidade" class="nav-link" data-scroll-target="#gerando-gráficos-de-alta-qualidade"><span class="header-section-number">1.6.2</span> Gerando Gráficos de Alta Qualidade</a></li>
+  <li><a href="#sem-baseado-em-covariância-cb-sem" id="toc-sem-baseado-em-covariância-cb-sem" class="nav-link" data-scroll-target="#sem-baseado-em-covariância-cb-sem"><span class="header-section-number">1.1.1</span> SEM Baseado em Covariância (CB-SEM)</a></li>
+  <li><a href="#sem-de-mínimos-quadrados-parciais-pls-sem" id="toc-sem-de-mínimos-quadrados-parciais-pls-sem" class="nav-link" data-scroll-target="#sem-de-mínimos-quadrados-parciais-pls-sem"><span class="header-section-number">1.1.2</span> SEM de Mínimos Quadrados Parciais (PLS-SEM)</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#referência" id="toc-referência" class="nav-link" data-scroll-target="#referência"><span class="header-section-number">2</span> Referência</a></li>
+  <li><a href="#seminr" id="toc-seminr" class="nav-link" data-scroll-target="#seminr"><span class="header-section-number">2</span> SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#carregando-e-limpando-os-dados" id="toc-carregando-e-limpando-os-dados" class="nav-link" data-scroll-target="#carregando-e-limpando-os-dados"><span class="header-section-number">2.1</span> Carregando e Limpando os Dados</a></li>
+  <li><a href="#especificando-os-modelos-de-mensuração" id="toc-especificando-os-modelos-de-mensuração" class="nav-link" data-scroll-target="#especificando-os-modelos-de-mensuração"><span class="header-section-number">2.2</span> Especificando os Modelos de Mensuração</a></li>
+  <li><a href="#especificação-do-modelo-estrutural-em-seminr" id="toc-especificação-do-modelo-estrutural-em-seminr" class="nav-link" data-scroll-target="#especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">2.3</span> Especificação do Modelo Estrutural em SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-relacionamentos" id="toc-tipos-de-relacionamentos" class="nav-link" data-scroll-target="#tipos-de-relacionamentos"><span class="header-section-number">2.3.1</span> Tipos de Relacionamentos</a></li>
+  </ul></li>
+  <li><a href="#estimativa-do-modelo-em-seminr" id="toc-estimativa-do-modelo-em-seminr" class="nav-link" data-scroll-target="#estimativa-do-modelo-em-seminr"><span class="header-section-number">2.4</span> Estimativa do Modelo em SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#modelos-de-mensuração" id="toc-modelos-de-mensuração" class="nav-link" data-scroll-target="#modelos-de-mensuração"><span class="header-section-number">2.4.1</span> Modelos de Mensuração</a></li>
+  <li><a href="#procedimentos-iterativos-do-algoritmo-pls-sem" id="toc-procedimentos-iterativos-do-algoritmo-pls-sem" class="nav-link" data-scroll-target="#procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">2.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</a></li>
+  <li><a href="#configurações-do-algoritmo-para-estimativa-do-modelo-pls" id="toc-configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="nav-link" data-scroll-target="#configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">2.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</a></li>
+  </ul></li>
+  <li><a href="#bootstrapping-do-modelo" id="toc-bootstrapping-do-modelo" class="nav-link" data-scroll-target="#bootstrapping-do-modelo"><span class="header-section-number">2.5</span> Bootstrapping do Modelo</a></li>
+  <li><a href="#exportação-de-resultados-e-gráficos-do-seminr" id="toc-exportação-de-resultados-e-gráficos-do-seminr" class="nav-link" data-scroll-target="#exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">2.6</span> Exportação de Resultados e Gráficos do SEMinR</a>
+  <ul class="collapse">
+  <li><a href="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" id="toc-exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="nav-link" data-scroll-target="#exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">2.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</a></li>
+  <li><a href="#gerando-gráficos-de-alta-qualidade" id="toc-gerando-gráficos-de-alta-qualidade" class="nav-link" data-scroll-target="#gerando-gráficos-de-alta-qualidade"><span class="header-section-number">2.6.2</span> Gerando Gráficos de Alta Qualidade</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão"><span class="header-section-number">3</span> Conclusão</a></li>
+  <li><a href="#referência" id="toc-referência" class="nav-link" data-scroll-target="#referência"><span class="header-section-number">4</span> Referência</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Outros formatos</h2><ul><li><a href="SEMinR.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="SEMinR.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
 </div>
@@ -132,7 +142,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Data de Publicação</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">22/10/2024</p>
+      <p class="date">04/12/2024</p>
     </div>
   </div>
   
@@ -152,11 +162,122 @@ body {
 
 </style>
 </div>
-<section id="seminr" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> SEMinR</h1>
+<section id="modelagem-de-equação-estrutural-sem" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Modelagem de Equação Estrutural (SEM)</h1>
+<p>A <strong>Modelagem de Equações Estruturais</strong> (SEM, do inglês Structural Equation Modeling) é uma abordagem estatística avançada que combina técnicas como análise de regressão, análise fatorial e modelos de caminhos. É amplamente utilizada em diversas áreas de pesquisa, especialmente nas ciências sociais, onde há necessidade de lidar com variáveis latentes e relações complexas entre variáveis. Essa técnica é considerada uma ferramenta de segunda geração, em comparação com técnicas de primeira geração, como regressão múltipla e análise de variância.</p>
+<p>As técnicas tradicionais de análise multivariada apresentam três principais limitações:</p>
+<ol type="1">
+<li><strong>Estrutura Simples do Modelo</strong>: Incapacidade de lidar com múltiplas relações simultâneas.<br>
+</li>
+<li><strong>Foco em Variáveis Observáveis</strong>: Não permitem a análise de variáveis latentes.<br>
+</li>
+<li><strong>Suposição de Precisão nas Medições</strong>: Assume que as variáveis observadas são medidas com precisão absoluta, o que muitas vezes não é o caso em pesquisas sociais.</li>
+</ol>
+<p>A Modelagem de Equações Estruturais (SEM), técnicas de segunda geração, é uma abordagem estatística que permite analisar e testar relações complexas entre variáveis, incluindo variáveis observadas (indicadores) e variáveis latentes (construtos não diretamente observáveis). Essa técnica combina aspectos da análise de regressão, análise de fator e modelos de caminhos.</p>
+<ul>
+<li><strong>Variáveis Latentes</strong>: Representam conceitos abstratos, como atitudes, valores ou percepções, que não podem ser diretamente mensurados. Por exemplo, “satisfação do cliente” ou “qualidade de vida”.<br>
+</li>
+<li><strong>Variáveis Observadas</strong>: São medidas diretamente coletadas que servem como indicadores das variáveis latentes. Exemplo: Perguntas sobre qualidade do produto e atendimento ao cliente como indicadores da satisfação do cliente.</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  format width height colorspace matte filesize density
+1    PNG   799    493       sRGB  TRUE   192816   57x57</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SEMinR_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="400"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A imagem ilustra um modelo estrutural de Modelagem de Equações Estruturais (SEM), que descreve as relações entre variáveis latentes exógenas, endógenas e indicadores observáveis.</p>
+<p><strong>1.Variáveis Latentes Exógenas</strong></p>
+<ul>
+<li>Representadas por <strong>Y1</strong> e <strong>Y2</strong> no lado esquerdo do modelo.</li>
+<li><strong>Exógenas</strong> significa que essas variáveis não têm causas explicadas dentro do modelo; elas são “determinantes” de outras variáveis.</li>
+<li><strong>Indicadores Observáveis</strong>:
+<ul>
+<li>Para <strong>Y1</strong>: x1, x2, x3.</li>
+<li>Para <strong>Y2</strong>: x4, x5, x6.</li>
+<li>Esses indicadores são usados para medir as variáveis latentes.</li>
+</ul></li>
+</ul>
+<p><strong>2. Variáveis Latentes Endógenas</strong> - Representadas por <strong>Y3</strong> e <strong>Y4</strong> no lado direito do modelo. - <strong>Endógenas</strong> são aquelas que têm suas causas explicadas por outras variáveis no modelo (Y1 e Y2 as influenciam). - <strong>Indicadores Observáveis</strong>: - Para <strong>Y3</strong>: x7, x8, x9. - Para <strong>Y4</strong>: x10.</p>
+<p><strong>3. Variável Latente Intermediária</strong> - <strong>Y3</strong> atua como uma variável latente <strong>intermediária</strong>, conectando as variáveis exógenas (Y1 e Y2) às endógenas (Y4). - Essa relação mostra que Y3 mede um impacto “indireto” das variáveis exógenas sobre Y4.</p>
+<p><strong>4. Estrutura do Modelo</strong> - O modelo reflete um sistema hierárquico e causal: - <strong>Y1</strong> e <strong>Y2</strong> influenciam diretamente <strong>Y3</strong> e indiretamente <strong>Y4</strong> por meio de Y3. - <strong>Y3</strong> afeta diretamente <strong>Y4</strong>. - Os indicadores observáveis (x1, x2…x10) são os dados medidos empiricamente para inferir as variáveis latentes.</p>
+<p><strong>5. Papel dos Erros</strong> - <strong>e7, e8, e9</strong>: Representam os erros de medida associados aos indicadores observáveis de Y3. - Esses erros indicam que as variáveis latentes não explicam completamente as variáveis observadas.</p>
+<p>Os modelos de medição na SEM descrevem como as variáveis observadas estão relacionadas às variáveis latentes e podem ser classificados em:</p>
+<ol type="1">
+<li><p><strong>Reflexivo</strong>: A variável latente influencia as variáveis observadas.</p></li>
+<li><p><strong>Formativo</strong>: As variáveis observadas compõem ou constroem a variável latente.</p></li>
+<li><p><strong>Modelo de Item Único</strong>: Usa apenas um indicador para representar a variável latente.</p></li>
+</ol>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  format width height colorspace matte filesize density
+1    PNG   700    427       sRGB  TRUE    82789   57x57</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SEMinR_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="350"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="métodos-de-estimação" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="métodos-de-estimação"><span class="header-section-number">1.1</span> Métodos de Estimação</h2>
+<p>Duas abordagens principais se destacam na aplicação da modelagem de equações estruturais (SEM):</p>
+<section id="sem-baseado-em-covariância-cb-sem" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="sem-baseado-em-covariância-cb-sem"><span class="header-section-number">1.1.1</span> SEM Baseado em Covariância (CB-SEM)</h3>
+<p>O CB-SEM, desenvolvido por Jöreskog, é amplamente usado para testar e confirmar teorias. Ele avalia a capacidade do modelo teórico de reproduzir a matriz de covariância dos dados observados, sendo útil para estudos confirmatórios. Os principais índices de ajuste incluem:</p>
+<ul>
+<li><strong>Chi-Quadrado (χ²)</strong>: Mede discrepâncias entre os dados e o modelo.<br>
+</li>
+<li><strong>CFI e TLI</strong>: Comparam o modelo teórico a um modelo nulo.<br>
+</li>
+<li><strong>RMSEA</strong>: Indica a qualidade do ajuste, considerando os graus de liberdade.</li>
+</ul>
+</section>
+<section id="sem-de-mínimos-quadrados-parciais-pls-sem" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="sem-de-mínimos-quadrados-parciais-pls-sem"><span class="header-section-number">1.1.2</span> SEM de Mínimos Quadrados Parciais (PLS-SEM)</h3>
+<p>Desenvolvido por Herman Wold, o PLS-SEM é mais adequado para análises exploratórias e preditivas. É utilizado quando:</p>
+<ul>
+<li>O tamanho da amostra é pequeno ou moderado.<br>
+</li>
+<li>Há problemas de normalidade nos dados.<br>
+</li>
+<li>O modelo é complexo.</li>
+</ul>
+<p>O PLS-SEM também oferece ferramentas para análises avançadas, como:<br>
+- <strong>Mediação</strong>: Examina o efeito indireto de uma variável sobre outra.<br>
+- <strong>Moderação</strong>: Avalia como uma terceira variável influencia a relação entre duas outras.<br>
+- <strong>Mediação Moderada</strong>: Combina os conceitos de mediação e moderação.</p>
+<p>As vantagens de utlizar o Vantagens da SEM</p>
+<ol type="1">
+<li><p><strong>Análise Simultânea de Relações</strong>: Permite modelar múltiplas relações entre variáveis dependentes e independentes.</p></li>
+<li><p><strong>Mensuração de Variáveis Latentes</strong>: Crucial para estudos que envolvem conceitos abstratos, como satisfação ou inteligência emocional.</p></li>
+<li><p><strong>Flexibilidade para Dados Reais</strong>: Suporta dados não normais, amostras menores e modelos complexos.</p></li>
+<li><p><strong>Testes de Modelos Teóricos</strong>: Avalia a adequação de modelos teóricos aos dados.</p></li>
+<li><p><strong>Exploração e Previsão</strong>: Especialmente útil no PLS-SEM para identificar padrões emergentes em dados.</p></li>
+</ol>
+<p>Apesar de suas vantagens, a SEM possui algumas limitações:</p>
+<ol type="1">
+<li><p><strong>Requisitos Técnicos Elevados:</strong> Exige conhecimento estatístico avançado.<br>
+</p></li>
+<li><p><strong>Dependência de Qualidade dos Dados:</strong> Sensível a muitmos valores ausentes e multicolinearidade.</p></li>
+<li><p><strong>Construção Subjetiva do Modelo:</strong> Depende do julgamento do pesquisador, podendo introduzir vieses.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="seminr" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> SEMinR</h1>
 <p>O SEMinR é um pacote de software desenvolvido para o ambiente estatístico R, que traz uma sintaxe amigável para criar e estimar modelos de equações estruturais (SEM). Ele é open source, o que significa que qualquer pessoa pode inspecionar, modificar e aprimorar o código-fonte. O SEMinR é distribuído sob a Licença Pública Geral GNU versão 3 (GPL-3), permitindo seu uso gratuito para fins pessoais, acadêmicos e comerciais, desde que qualquer alteração ou aplicação derivada também seja de código aberto.</p>
 <p>O SEMinR está hospedado no GitHub, onde os usuários são incentivados a seguir a página e contribuir para o projeto, além de reportar problemas por meio do recurso de issues. Há também um grupo no Facebook onde os desenvolvedores e usuários discutem novidades, práticas recomendadas e tutoriais sobre o SEMinR.</p>
-<p>A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote <strong>lavaan</strong> para a estimativa CB-SEM.</p>
+<p>A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote <strong>lavaan</strong> para a estimativa CB-SEM.No entanto, iremos mostrar somente de PLS-SEM</p>
 <p>O desenvolvimento do SEMinR está em constante melhoria, incorporando novos métodos e oferecendo opções úteis de relatórios. Para usar o SEMinR, é necessário instalá-lo no RStudio, sendo recomendada a atualização para a versão mais recente do R e RStudio, se necessário.</p>
 <p>O processo para especificar e estimar um modelo de equações estruturais no SEMinR envolve quatro etapas principais:</p>
 <ol type="1">
@@ -165,17 +286,19 @@ body {
 <li><strong>Especificar o modelo estrutural:</strong> Estabelecer as relações entre os construtos, identificando quais são os exógenos e endógenos.</li>
 <li><strong>Estimar, realizar o bootstrap e resumir o modelo:</strong> Estimar o modelo, aplicar o bootstrap para validar os resultados e gerar um resumo da análise.</li>
 </ol>
-<section id="carregando-e-limpando-os-dados" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="carregando-e-limpando-os-dados"><span class="header-section-number">1.1</span> Carregando e Limpando os Dados</h2>
+<section id="carregando-e-limpando-os-dados" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="carregando-e-limpando-os-dados"><span class="header-section-number">2.1</span> Carregando e Limpando os Dados</h2>
 <p>Os arquivos CSV (Comma-Separated Values) são arquivos de texto onde cada linha representa os dados de um sujeito, com valores correspondentes a variáveis separadas por vírgulas ou outros caracteres, como ponto e vírgula. A primeira linha geralmente contém os nomes das variáveis (linha de cabeçalho). Para carregar um arquivo CSV no R, utiliza-se a função <code>read.csv()</code>, e a documentação pode ser acessada com <code>?read.csv</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instalar e Carregar o Pacote</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("seminr")</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seminr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Importar banco de dados</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>corp_rep_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> <span class="st">"Corporate Reputation Data.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">";"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(corp_rep_data )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instalar e Carregar o Pacote</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("seminr")</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(seminr)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>caminho <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">"/Corporate Reputation Data.csv"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Importar banco de dados</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>corp_rep_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(caminho, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(corp_rep_data )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
@@ -532,8 +655,8 @@ body {
 </div>
 </div>
 </section>
-<section id="especificando-os-modelos-de-mensuração" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="especificando-os-modelos-de-mensuração"><span class="header-section-number">1.2</span> Especificando os Modelos de Mensuração</h2>
+<section id="especificando-os-modelos-de-mensuração" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="especificando-os-modelos-de-mensuração"><span class="header-section-number">2.2</span> Especificando os Modelos de Mensuração</h2>
 <p>Os modelos de caminho consistem em dois elementos:</p>
 <ol type="1">
 <li><strong>Modelos de mensuração (ou modelos externos)</strong>: descrevem as relações entre as variáveis latentes e seus indicadores.</li>
@@ -620,7 +743,7 @@ Tabela&nbsp;1: Argumentos da Função composite()
 <li><strong>Definindo o Construto Refletivamente Medido COMP</strong>:</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="at">weights =</span> mode_A)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="at">weights =</span> mode_A)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "COMP"   "comp_1" "A"      "COMP"   "comp_2" "A"      "COMP"   "comp_3"
 [9] "A"     
@@ -632,7 +755,7 @@ attr(,"class")
 <li><strong>Definindo o Modelo de Mensuração de Item Único CUSA</strong>:</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "CUSA" "cusa" "A"   
 attr(,"class")
@@ -641,17 +764,17 @@ attr(,"class")
 </div>
 <p>Aqui está um exemplo completo de como utilizar essas funções em um código R:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Criar o modelo de mensuração</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>simple_mm <span class="ot">&lt;-</span> <span class="fu">constructs</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"LIKE"</span>, <span class="fu">multi_items</span>(<span class="st">"like_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>)),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSL"</span>, <span class="fu">multi_items</span>(<span class="st">"cusl_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>))</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar o modelo de mensuração</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(simple_mm )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Criar o modelo de mensuração</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>simple_mm <span class="ot">&lt;-</span> <span class="fu">constructs</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"COMP"</span>, <span class="fu">multi_items</span>(<span class="st">"comp_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"LIKE"</span>, <span class="fu">multi_items</span>(<span class="st">"like_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSA"</span>, <span class="fu">single_item</span>(<span class="st">"cusa"</span>)),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">composite</span>(<span class="st">"CUSL"</span>, <span class="fu">multi_items</span>(<span class="st">"cusl_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar o modelo de mensuração</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(simple_mm )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$composite
 [1] "COMP"   "comp_1" "A"      "COMP"   "comp_2" "A"      "COMP"   "comp_3"
@@ -682,15 +805,15 @@ attr(,"class")
 </div>
 <p>Esse código cria um objeto chamado <code>measurement_model</code>, que contém os modelos de mensuração para os construtos COMP, CUSA, LIKE e CUSL, prontos para uso em uma análise PLS-SEM.</p>
 </section>
-<section id="especificação-do-modelo-estrutural-em-seminr" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">1.3</span> Especificação do Modelo Estrutural em SEMinR</h2>
+<section id="especificação-do-modelo-estrutural-em-seminr" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="especificação-do-modelo-estrutural-em-seminr"><span class="header-section-number">2.3</span> Especificação do Modelo Estrutural em SEMinR</h2>
 <p>Após a definição do modelo de mensuração, o próximo passo é especificar o modelo estrutural. Dois aspectos principais devem ser considerados:</p>
 <ol type="1">
 <li><strong>Sequência dos Construtos</strong>: A ordem em que os construtos são organizados no modelo.</li>
 <li><strong>Relacionamentos entre Construtos</strong>: As interações que existem entre eles, fundamentais para a formulação de hipóteses e para a teoria sendo testada.</li>
 </ol>
-<section id="tipos-de-relacionamentos" class="level3" data-number="1.3.1">
-<h3 data-number="1.3.1" class="anchored" data-anchor-id="tipos-de-relacionamentos"><span class="header-section-number">1.3.1</span> Tipos de Relacionamentos</h3>
+<section id="tipos-de-relacionamentos" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="tipos-de-relacionamentos"><span class="header-section-number">2.3.1</span> Tipos de Relacionamentos</h3>
 <ul>
 <li><strong>Relações Lineares Independentes</strong>: Relacionamentos entre construtos que são diretos e unidimensionais.</li>
 <li><strong>Mediação</strong>: Um construto atua como mediador entre outro construto e um resultado.</li>
@@ -703,12 +826,12 @@ attr(,"class")
 </ul>
 <p>Para o modelo simples, que envolve relacionamentos entre os construtos COMP, LIKE, CUSA e CUSL, você pode definir os relacionamentos da seguinte forma:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar o modelo estrutural</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>simple_sm <span class="ot">&lt;-</span> <span class="fu">relationships</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"COMP"</span>, <span class="st">"LIKE"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>, <span class="st">"CUSL"</span>)),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSL"</span>))</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>simple_sm </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar o modelo estrutural</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>simple_sm <span class="ot">&lt;-</span> <span class="fu">relationships</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"COMP"</span>, <span class="st">"LIKE"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>, <span class="st">"CUSL"</span>)),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paths</span>(<span class="at">from =</span> <span class="fu">c</span>(<span class="st">"CUSA"</span>), <span class="at">to =</span> <span class="fu">c</span>(<span class="st">"CUSL"</span>))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>simple_sm </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     source target
 [1,] "COMP" "CUSA"
@@ -726,11 +849,11 @@ attr(,"class")
 </ul>
 </section>
 </section>
-<section id="estimativa-do-modelo-em-seminr" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="estimativa-do-modelo-em-seminr"><span class="header-section-number">1.4</span> Estimativa do Modelo em SEMinR</h2>
+<section id="estimativa-do-modelo-em-seminr" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="estimativa-do-modelo-em-seminr"><span class="header-section-number">2.4</span> Estimativa do Modelo em SEMinR</h2>
 <p>Após especificar os modelos de mensuração e estrutural, o próximo passo é a estimativa do modelo usando o algoritmo PLS-SEM. Esse processo envolve a determinação das pontuações dos construtos, que serão utilizadas como entrada para os modelos de regressão parciais dentro do modelo de caminho. Uma vez que o algoritmo calcula as pontuações dos construtos, essas pontuações são usadas para estimar cada modelo de regressão parcial, resultando nas estimativas para todos os relacionamentos nos modelos de mensuração (pesos/loads dos indicadores) e no modelo estrutural (coeficientes de caminho).</p>
-<section id="modelos-de-mensuração" class="level3" data-number="1.4.1">
-<h3 data-number="1.4.1" class="anchored" data-anchor-id="modelos-de-mensuração"><span class="header-section-number">1.4.1</span> Modelos de Mensuração</h3>
+<section id="modelos-de-mensuração" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="modelos-de-mensuração"><span class="header-section-number">2.4.1</span> Modelos de Mensuração</h3>
 <p>A configuração dos modelos de mensuração depende de como cada construto é modelado:</p>
 <ol type="1">
 <li><strong>Modelos Reflexivos</strong>: Para construtos modelados como reflexivos, as cargas dos indicadores são geralmente estimadas através do modo A, utilizando regressões bivariadas. Nesse caso, a pontuação do construto é a variável independente, enquanto cada indicador é a variável dependente.</li>
@@ -739,16 +862,16 @@ attr(,"class")
 <p>Embora a abordagem padrão utilize modo A para modelos reflexivos e modo B para modelos formativos, os pesquisadores podem optar por um modo diferente em situações especiais.</p>
 <p>Os cálculos do modelo estrutural são realizados conforme descrito abaixo: - <strong>Modelos de Regressão Parcial</strong>: Cada construto endógeno é considerado como a variável dependente em um modelo de regressão, com seus precursores diretos (construtos latentes com relação direta) como variáveis independentes. Assim, há um modelo de regressão parcial para cada construto endógeno, permitindo a estimativa de todos os coeficientes de caminho no modelo estrutural.</p>
 </section>
-<section id="procedimentos-iterativos-do-algoritmo-pls-sem" class="level3" data-number="1.4.2">
-<h3 data-number="1.4.2" class="anchored" data-anchor-id="procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">1.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</h3>
+<section id="procedimentos-iterativos-do-algoritmo-pls-sem" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="procedimentos-iterativos-do-algoritmo-pls-sem"><span class="header-section-number">2.4.2</span> Procedimentos Iterativos do Algoritmo PLS-SEM</h3>
 <p>O algoritmo PLS-SEM executa a estimativa através de dois estágios:</p>
 <ol type="1">
 <li><strong>Estimativa das Pontuações dos Construtos</strong>: No primeiro estágio, as pontuações dos construtos são estimadas.</li>
 <li><strong>Cálculo Final dos Pesos dos Indicadores</strong>: No segundo estágio, as estimativas finais dos pesos e cargas dos indicadores, bem como os coeficientes de caminho do modelo estrutural e os valores de ( R^2 ) dos construtos latentes endógenos, são calculados.</li>
 </ol>
 </section>
-<section id="configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="level3" data-number="1.4.3">
-<h3 data-number="1.4.3" class="anchored" data-anchor-id="configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">1.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</h3>
+<section id="configurações-do-algoritmo-para-estimativa-do-modelo-pls" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="configurações-do-algoritmo-para-estimativa-do-modelo-pls"><span class="header-section-number">2.4.3</span> Configurações do Algoritmo para Estimativa do Modelo PLS</h3>
 <p>Para estimar um modelo de caminho PLS, deve-se selecionar opções algorítmicas e configurações de argumentos. As principais configurações incluem:</p>
 <ul>
 <li><strong><code>inner_weights</code></strong>: Esquema de ponderação para a estimativa do caminho. Pode ser escolhido entre <code>path_weighting</code> (default) ou <code>path_factorial</code>.</li>
@@ -824,13 +947,13 @@ Tabela&nbsp;2: Argumentos para a Função estimate_pls()
 <p>Para estimar o modelo PLS-SEM usando a função <code>estimate_pls()</code> no R, você deve garantir que os modelos de mensuração e estrutural já estejam definidos e que o conjunto de dados esteja pronto. Aqui está um exemplo de como isso pode ser feito, com explicações sobre cada parte do código:</p>
 <p>O Código R para Estimar o Modelo PLS-SEM</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar o modelo PLS-SEM</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>corp_rep_simple_model <span class="ot">&lt;-</span> <span class="fu">estimate_pls</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> corp_rep_data,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">measurement_model =</span> simple_mm,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">structural_model =</span> simple_sm,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">missing_value =</span> <span class="st">"-99"</span>  <span class="co"># Usar aspas retas</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar o modelo PLS-SEM</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>corp_rep_simple_model <span class="ot">&lt;-</span> <span class="fu">estimate_pls</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> corp_rep_data,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">measurement_model =</span> simple_mm,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">structural_model =</span> simple_sm,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">missing_value =</span> <span class="st">"-99"</span>  <span class="co"># Usar aspas retas</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Explicações dos Argumentos:</strong></p>
 <ul>
@@ -928,9 +1051,9 @@ Tabela&nbsp;3: Elementos do Objeto summary.seminr_model
 <p>O objeto <code>summary.seminr_model</code> é fundamental para a análise dos resultados após a estimação do modelo PLS-SEM, proporcionando uma visão abrangente da qualidade e desempenho do modelo.</p>
 <p>Você pode usar o operador $ para acessar os sub-objetos do modelo estimado, conforme descrito na <a href="#tbl-elementosdoObjetosummary-seminr-model" class="quarto-xref">Tabela&nbsp;3</a>. Aqui está um exemplo de como você pode inspecionar cada um dos sub-objetos no seu modelo corp_rep_simple_model após a estimativa do modelo PLS-SEM. O código a seguir mostra como fazer isso em R:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumir os resultados do modelo</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(corp_rep_simple_model)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumir os resultados do modelo</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(corp_rep_simple_model)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Results from  package seminr (2.3.4)
@@ -954,8 +1077,8 @@ Alpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os coeficientes de caminho do modelo e os valores de R²</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>paths</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os coeficientes de caminho do modelo e os valores de R²</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>paths</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        CUSA  CUSL
 R^2    0.295 0.562
@@ -964,8 +1087,8 @@ COMP   0.162 0.009
 LIKE   0.424 0.342
 CUSA       . 0.504</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as métricas de confiabilidade dos construtos</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>reliability</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as métricas de confiabilidade dos construtos</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>summary_simple_corp_rep<span class="sc">$</span>reliability</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     alpha  rhoC   AVE  rhoA
 COMP 0.776 0.865 0.681 0.832
@@ -979,8 +1102,8 @@ Alpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5</code></pre>
 <p>Aqui está uma explicação da seção sobre <strong>bootstrapping</strong> do modelo PLS-SEM, incluindo detalhes sobre a função <code>bootstrap_model()</code> e como utilizá-la no R.</p>
 </section>
 </section>
-<section id="bootstrapping-do-modelo" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="bootstrapping-do-modelo"><span class="header-section-number">1.5</span> Bootstrapping do Modelo</h2>
+<section id="bootstrapping-do-modelo" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="bootstrapping-do-modelo"><span class="header-section-number">2.5</span> Bootstrapping do Modelo</h2>
 <p>O bootstrapping é uma técnica estatística não paramétrica utilizada para estimar erros padrão e intervalos de confiança em modelos. Para modelos PLS-SEM, essa abordagem é essencial, uma vez que o método não faz suposições paramétricas.</p>
 <p>A <strong>função <code>bootstrap_model()</code> </strong> do pacote SEMinR é usada para realizar bootstrapping em um modelo PLS-SEM previamente estimado. Esta função suporta processamento paralelo, o que significa que pode utilizar múltiplos núcleos do processador, aumentando a eficiência do cálculo.</p>
 <ul>
@@ -991,18 +1114,18 @@ Alpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5</code></pre>
 </ul>
 <p>Um exemplo de como você pode realizar o bootstrapping do seu modelo:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Executar o bootstrapping do modelo</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">bootstrap_model</span>(</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seminr_model =</span> corp_rep_simple_model,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboot =</span> <span class="dv">1000</span>,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="cn">NULL</span>,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Armazenar o resumo do modelo bootstrapped</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(boot_simple_corp_rep)  <span class="co">#</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Executar o bootstrapping do modelo</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">bootstrap_model</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seminr_model =</span> corp_rep_simple_model,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nboot =</span> <span class="dv">1000</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="cn">NULL</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Armazenar o resumo do modelo bootstrapped</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep <span class="ot">&lt;-</span> <span class="fu">summary</span>(boot_simple_corp_rep)  <span class="co">#</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>sum_boot_simple_corp_rep </span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Results from Bootstrap resamples:  1000
@@ -1088,9 +1211,9 @@ CUSA  -&gt;  CUSL         0.504          0.504        0.042   0.419    0.585</co
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os caminhos estruturais bootstrapped</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_paths <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_paths</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_paths)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar os caminhos estruturais bootstrapped</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_paths <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_paths</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_paths)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
 COMP  -&gt;  CUSA         0.162          0.166        0.068   2.374   0.038
@@ -1105,9 +1228,9 @@ LIKE  -&gt;  CUSA    0.542
 LIKE  -&gt;  CUSL    0.450
 CUSA  -&gt;  CUSL    0.585</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as cargas dos indicadores bootstrapped</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_loadings <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_loadings)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecionar as cargas dos indicadores bootstrapped</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>bootstrapped_loadings <span class="ot">&lt;-</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(bootstrapped_loadings)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 Original Est. Bootstrap Mean Bootstrap SD T Stat. 2.5% CI
 comp_1  -&gt;  COMP         0.858          0.858        0.021  41.366   0.813
@@ -1139,30 +1262,30 @@ cusl_3  -&gt;  CUSL    0.881</code></pre>
 </ul>
 <p>Essa abordagem de bootstrapping é crucial para a validade dos resultados obtidos no modelo PLS-SEM, permitindo uma análise mais robusta e confiável.</p>
 </section>
-<section id="exportação-de-resultados-e-gráficos-do-seminr" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">1.6</span> Exportação de Resultados e Gráficos do SEMinR</h2>
+<section id="exportação-de-resultados-e-gráficos-do-seminr" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="exportação-de-resultados-e-gráficos-do-seminr"><span class="header-section-number">2.6</span> Exportação de Resultados e Gráficos do SEMinR</h2>
 <p>Após a estimativa, avaliação e análise do modelo, muitas vezes é necessário exportar os resultados gerados no R para um relatório, como um documento do Apache OpenOffice Writer (.odt) ou uma apresentação do Microsoft PowerPoint (.ppt ou .pptx). Ao longo deste livro, fornecemos capturas de tela para demonstrar as saídas do código no console do RStudio. No entanto, não recomendamos o uso desse método para copiar e colar resultados em relatórios ou artigos de pesquisa. Em vez disso, recomendamos exportar tabelas e matrizes para arquivos .csv, que podem ser importados para documentos ou apresentações, e que figuras sejam exportadas para arquivos .pdf para garantir a melhor qualidade de impressão.</p>
-<section id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="level3" data-number="1.6.1">
-<h3 data-number="1.6.1" class="anchored" data-anchor-id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">1.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</h3>
+<section id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="exportando-os-carregamentos-bootstrap-para-um-arquivo-csv"><span class="header-section-number">2.6.1</span> Exportando os Carregamentos Bootstrap para um Arquivo CSV</h3>
 <p>Depois de escrever os carregamentos bootstrap em um arquivo CSV, você pode usar o seguinte código em R:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Escrever o objeto de caminhos bootstrap em um arquivo CSV</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="at">x =</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">file =</span> <span class="st">"boot_loadings.csv"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Escrever o objeto de caminhos bootstrap em um arquivo CSV</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(<span class="at">x =</span> sum_boot_simple_corp_rep<span class="sc">$</span>bootstrapped_loadings,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">file =</span> <span class="st">"boot_loadings.csv"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Uma vez que o arquivo <code>boot_loadings.csv</code> foi salvo no diretório de trabalho, você pode abri-lo com o Apache OpenOffice Calc, Microsoft Excel ou outro software de planilha. Esses aplicativos permitem a formatação e edição da tabela para produzir tabelas de alta qualidade em relatórios.</p>
 </section>
-<section id="gerando-gráficos-de-alta-qualidade" class="level3" data-number="1.6.2">
-<h3 data-number="1.6.2" class="anchored" data-anchor-id="gerando-gráficos-de-alta-qualidade"><span class="header-section-number">1.6.2</span> Gerando Gráficos de Alta Qualidade</h3>
+<section id="gerando-gráficos-de-alta-qualidade" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="gerando-gráficos-de-alta-qualidade"><span class="header-section-number">2.6.2</span> Gerando Gráficos de Alta Qualidade</h3>
 <p>Para gerar gráficos a partir dos resultados do SEMinR, siga os passos abaixo:</p>
 <p>Use a função <code>plot()</code> para visualizar as confiabilidades internas dos construtos, como Cronbach’s alpha, rhoA e rhoC.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Gerar um gráfico da confiabilidade dos construtos</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">plot</span>(summary_simple_corp_rep<span class="sc">$</span>reliability)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Gerar um gráfico da confiabilidade dos construtos</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">plot</span>(summary_simple_corp_rep<span class="sc">$</span>reliability)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="SEMinR_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="SEMinR_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1171,8 +1294,13 @@ cusl_3  -&gt;  CUSL    0.881</code></pre>
 </section>
 </section>
 </section>
-<section id="referência" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Referência</h1>
+<section id="conclusão" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Conclusão</h1>
+<p>A Modelagem de Equações Estruturais é uma técnica poderosa e versátil, capaz de lidar com a complexidade inerente aos estudos que envolvem variáveis latentes e relações multidimensionais. Sua aplicação continua a crescer, adaptando-se aos desafios contemporâneos e oferecendo insights profundos em diversas áreas do conhecimento.</p>
+<p>Lembre-se de que toda modelagem envolve a verificação da qualidade de ajuste. Na modelagem SEM, esse processo é realizado em três etapas principais: ajuste geral do modelo, validade do modelo de medição e validade do modelo estrutural. Apesar de não ter mostrado essas etapas aqui, é importante destacar que elas devem ser realizadas antes de validar qualquer resultado encontrado na sua análise.</p>
+</section>
+<section id="referência" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Referência</h1>
 <p>HAIR, J. F. et al.<strong>Partial least squares structural equation modeling (PLS-SEM) using R : a workbook</strong>. Cham, Switzerland: Springer, 2021.</p>
 </section>
 

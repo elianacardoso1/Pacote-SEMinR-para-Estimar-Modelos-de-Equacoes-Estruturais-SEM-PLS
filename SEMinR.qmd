@@ -1,7 +1,7 @@
 ---
 title: "Pacote SEMinR para Estimar Modelos de Equações Estruturais (SEM-PLS)"
 subtitle: "Partial Least Squares Structural Equation Modeling (PLS-SEM) Using R"
-author: "Eliana Cardoso Gonçalves e Evandro Augusto Rubert Roza"
+author: "Eliana Cardoso Gonçalves"
 date: "`r Sys.Date()`" 
 date-format: short # formatação dd/mm/aaaa
 lang: pt # linguagem
@@ -42,17 +42,153 @@ execute:
   warning: false
 ---
 
-```{css, echo= FALSE}
-body {
-  text-align: justify;
-}
 
+
+```{r,echo=FALSE}
+
+remove(list=ls())
 ```
+
+
+
 
 ```{r, echo=FALSE}
 library(kableExtra)
 library(knitr)
+library(webshot2)
+
 ```
+
+# Modelagem de Equação Estrutural (SEM)
+
+
+A **Modelagem de Equações Estruturais** (SEM, do inglês Structural Equation Modeling) é uma abordagem estatística avançada que combina técnicas como análise de regressão, análise fatorial e modelos de caminhos. É amplamente utilizada em diversas áreas de pesquisa, especialmente nas ciências sociais, onde há necessidade de lidar com variáveis latentes e relações complexas entre variáveis. Essa técnica é considerada uma ferramenta de segunda geração, em comparação com técnicas de primeira geração, como regressão múltipla e análise de variância.
+
+
+As técnicas tradicionais de análise multivariada apresentam três principais limitações:  
+
+1. **Estrutura Simples do Modelo**: Incapacidade de lidar com múltiplas relações simultâneas.  
+2. **Foco em Variáveis Observáveis**: Não permitem a análise de variáveis latentes.  
+3. **Suposição de Precisão nas Medições**: Assume que as variáveis observadas são medidas com precisão absoluta, o que muitas vezes não é o caso em pesquisas sociais.
+
+A Modelagem de Equações Estruturais (SEM),  técnicas de segunda geração, é uma abordagem estatística que permite analisar e testar relações complexas entre variáveis, incluindo variáveis observadas (indicadores) e variáveis latentes (construtos não diretamente observáveis). Essa técnica combina aspectos da análise de regressão, análise de fator e modelos de caminhos.
+
+
+- **Variáveis Latentes**: Representam conceitos abstratos, como atitudes, valores ou percepções, que não podem ser diretamente mensurados. Por exemplo, "satisfação do cliente" ou "qualidade de vida".  
+- **Variáveis Observadas**: São medidas diretamente coletadas que servem como indicadores das variáveis latentes. Exemplo: Perguntas sobre qualidade do produto e atendimento ao cliente como indicadores da satisfação do cliente.
+```{r, echo=FALSE}
+# Instalar o pacote magick, se ainda não tiver
+#install.packages("magick")
+
+# Carregar o pacote
+library(magick)
+
+# Ler e exibir a imagem
+imagem <- image_read("Modelo.png")
+print(imagem)
+
+```
+
+A imagem ilustra um modelo estrutural de Modelagem de Equações Estruturais (SEM), que descreve as relações entre variáveis latentes exógenas, endógenas e indicadores observáveis. 
+
+
+**1.Variáveis Latentes Exógenas**
+
+- Representadas por **Y1** e **Y2** no lado esquerdo do modelo.
+- **Exógenas** significa que essas variáveis não têm causas explicadas dentro do modelo; elas são "determinantes" de outras variáveis.
+- **Indicadores Observáveis**:
+  - Para **Y1**: x1, x2, x3.
+  - Para **Y2**: x4, x5, x6.
+  - Esses indicadores são usados para medir as variáveis latentes.
+
+**2. Variáveis Latentes Endógenas**
+- Representadas por **Y3** e **Y4** no lado direito do modelo.
+- **Endógenas** são aquelas que têm suas causas explicadas por outras variáveis no modelo (Y1 e Y2 as influenciam).
+- **Indicadores Observáveis**:
+  - Para **Y3**: x7, x8, x9.
+  - Para **Y4**: x10.
+
+**3. Variável Latente Intermediária**
+- **Y3** atua como uma variável latente **intermediária**, conectando as variáveis exógenas (Y1 e Y2) às endógenas (Y4). 
+- Essa relação mostra que Y3 mede um impacto "indireto" das variáveis exógenas sobre Y4.
+
+
+**4. Estrutura do Modelo**
+- O modelo reflete um sistema hierárquico e causal:
+  - **Y1** e **Y2** influenciam diretamente **Y3** e indiretamente **Y4** por meio de Y3.
+  - **Y3** afeta diretamente **Y4**.
+  - Os indicadores observáveis (x1, x2...x10) são os dados medidos empiricamente para inferir as variáveis latentes.
+
+
+
+ **5. Papel dos Erros**
+- **e7, e8, e9**: Representam os erros de medida associados aos indicadores observáveis de Y3.
+- Esses erros indicam que as variáveis latentes não explicam completamente as variáveis observadas.
+
+
+
+Os modelos de medição na SEM descrevem como as variáveis observadas estão relacionadas às variáveis latentes e podem ser classificados em:
+
+1. **Reflexivo**: A variável latente influencia as variáveis observadas.  
+
+2. **Formativo**: As variáveis observadas compõem ou constroem a variável latente.  
+
+3. **Modelo de Item Único**: Usa apenas um indicador para representar a variável latente.
+
+
+```{r, echo=FALSE}
+imagem1 <- image_read("modelo1.png")
+print(imagem1)
+
+```
+
+## Métodos de Estimação
+
+Duas abordagens principais se destacam na aplicação da modelagem de equações estruturais (SEM):
+
+### SEM Baseado em Covariância (CB-SEM) 
+O CB-SEM, desenvolvido por Jöreskog, é amplamente usado para testar e confirmar teorias. Ele avalia a capacidade do modelo teórico de reproduzir a matriz de covariância dos dados observados, sendo útil para estudos confirmatórios. Os principais índices de ajuste incluem:  
+
+- **Chi-Quadrado (χ²)**: Mede discrepâncias entre os dados e o modelo.  
+- **CFI e TLI**: Comparam o modelo teórico a um modelo nulo.  
+- **RMSEA**: Indica a qualidade do ajuste, considerando os graus de liberdade.  
+
+### SEM de Mínimos Quadrados Parciais (PLS-SEM) 
+Desenvolvido por Herman Wold, o PLS-SEM é mais adequado para análises exploratórias e preditivas. É utilizado quando:  
+
+- O tamanho da amostra é pequeno ou moderado.  
+- Há problemas de normalidade nos dados.  
+- O modelo é complexo.  
+
+O PLS-SEM também oferece ferramentas para análises avançadas, como:  
+- **Mediação**: Examina o efeito indireto de uma variável sobre outra.  
+- **Moderação**: Avalia como uma terceira variável influencia a relação entre duas outras.  
+- **Mediação Moderada**: Combina os conceitos de mediação e moderação.
+
+As vantagens de utlizar o  Vantagens da SEM
+
+1. **Análise Simultânea de Relações**: Permite modelar múltiplas relações entre variáveis dependentes e independentes.  
+
+2. **Mensuração de Variáveis Latentes**: Crucial para estudos que envolvem conceitos abstratos, como satisfação ou inteligência emocional.  
+
+3. **Flexibilidade para Dados Reais**: Suporta dados não normais, amostras menores e modelos complexos.  
+
+4. **Testes de Modelos Teóricos**: Avalia a adequação de modelos teóricos aos dados.  
+
+5. **Exploração e Previsão**: Especialmente útil no PLS-SEM para identificar padrões emergentes em dados.
+
+Apesar de suas vantagens, a SEM possui algumas limitações:  
+
+1. **Requisitos Técnicos Elevados:** Exige conhecimento estatístico avançado.  
+2. **Dependência de Qualidade dos Dados:** Sensível a muitmos valores ausentes e multicolinearidade.  
+
+3. **Construção Subjetiva do Modelo:** Depende do julgamento do pesquisador, podendo introduzir vieses.
+
+
+
+
+
+
 
 # SEMinR
 
@@ -61,7 +197,7 @@ O SEMinR é um pacote de software desenvolvido para o ambiente estatístico R, q
 
 O SEMinR está hospedado no GitHub, onde os usuários são incentivados a seguir a página e contribuir para o projeto, além de reportar problemas por meio do recurso de issues. Há também um grupo no Facebook onde os desenvolvedores e usuários discutem novidades, práticas recomendadas e tutoriais sobre o SEMinR.
 
-A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote **lavaan** para a estimativa CB-SEM.
+A sintaxe do SEMinR permite que profissionais apliquem modelos PLS-SEM (Modelagem de Equações Estruturais com Mínimos Quadrados Parciais) com uma terminologia familiar, como reflexivos, compostos e interações, sem a necessidade de especificar matrizes subjacentes. O pacote suporta tanto PLS-SEM quanto SEM baseado em covariâncias (CB-SEM), e integra-se com o pacote **lavaan** para a estimativa CB-SEM.No entanto, iremos mostrar somente de PLS-SEM
 
 O desenvolvimento do SEMinR está em constante melhoria, incorporando novos métodos e oferecendo opções úteis de relatórios. Para usar o SEMinR, é necessário instalá-lo no RStudio, sendo recomendada a atualização para a versão mais recente do R e RStudio, se necessário.
 
@@ -81,8 +217,10 @@ Os arquivos CSV (Comma-Separated Values) são arquivos de texto onde cada linha 
 #install.packages("seminr")
 library(seminr)
 
+caminho <- paste0(getwd(), "/Corporate Reputation Data.csv")
+
 # Importar banco de dados
-corp_rep_data <- read.csv(file = "Corporate Reputation Data.csv", header = TRUE, sep = ";")
+corp_rep_data <- read.csv(caminho, header = TRUE, sep = ";")
 head(corp_rep_data )
 ```
 ## Especificando os Modelos de Mensuração
@@ -476,6 +614,15 @@ Use a função `plot()` para visualizar as confiabilidades internas dos construt
 ```
 
 Ao seguir esses passos, você garantirá que seus resultados e gráficos estejam prontos para serem incluídos em documentos e relatórios de forma profissional e com alta qualidade de impressão.
+
+
+
+
+# Conclusão
+A Modelagem de Equações Estruturais é uma técnica poderosa e versátil, capaz de lidar com a complexidade inerente aos estudos que envolvem variáveis latentes e relações multidimensionais. Sua aplicação continua a crescer, adaptando-se aos desafios contemporâneos e oferecendo insights profundos em diversas áreas do conhecimento.
+
+
+Lembre-se de que toda modelagem envolve a verificação da qualidade de ajuste. Na modelagem SEM, esse processo é realizado em três etapas principais: ajuste geral do modelo, validade do modelo de medição e validade do modelo estrutural. Apesar de não ter mostrado essas etapas aqui, é importante destacar que elas devem ser realizadas antes de validar qualquer resultado encontrado na sua análise.
 
 # Referência
 
